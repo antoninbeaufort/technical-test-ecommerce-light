@@ -15,6 +15,8 @@ import {
 
 import tailwindStylesheetUrl from "./styles/tailwind.css";
 import { getUser } from "./session.server";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 export const links: LinksFunction = () => {
   return [{ rel: "stylesheet", href: tailwindStylesheetUrl }];
@@ -22,7 +24,7 @@ export const links: LinksFunction = () => {
 
 export const meta: MetaFunction = () => ({
   charset: "utf-8",
-  title: "Remix Notes",
+  title: "Technical test e-commerce light",
   viewport: "width=device-width,initial-scale=1",
 });
 
@@ -38,13 +40,15 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function App() {
   return (
-    <html lang="en" className="h-full">
+    <html lang="fr">
       <head>
         <Meta />
         <Links />
       </head>
-      <body className="h-full">
+      <body>
+        <Navbar />
         <Outlet />
+        <Footer />
         <ScrollRestoration />
         <Scripts />
         <LiveReload />
