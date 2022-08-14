@@ -2,15 +2,16 @@ import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RadioGroup } from "@headlessui/react";
 import { CurrencyDollarIcon, GlobeIcon } from "@heroicons/react/outline";
 import { StarIcon } from "@heroicons/react/solid";
 
-import { getProductBySlug } from "~/models/product";
+import { getOtherProductListItems, getProductBySlug } from "~/models/product";
 import { classNames, getProductImageUrl } from "~/utils";
 
 type LoaderData = {
+  otherProductListItems: Awaited<ReturnType<typeof getOtherProductListItems>>;
   product: NonNullable<Awaited<ReturnType<typeof getProductBySlug>>>;
 };
 
@@ -21,34 +22,19 @@ export const loader: LoaderFunction = async ({ params }) => {
   if (!product) {
     throw new Response("Not Found", { status: 404 });
   }
-  return json<LoaderData>({ product });
+  const otherProductListItems = await getOtherProductListItems({
+    slug: params.slug,
+  });
+  return json<LoaderData>({ otherProductListItems, product });
 };
 
-//     { name: "Black", bgColor: "bg-gray-900", selectedColor: "ring-gray-900" },
-//     {
-//       name: "Heather Grey",
-//       bgColor: "bg-gray-400",
-//       selectedColor: "ring-gray-400",
-//     },
-//   ],
-//   sizes: [
-//     { name: "XXS", inStock: true },
-//     { name: "XS", inStock: true },
-//     { name: "S", inStock: true },
-//     { name: "M", inStock: true },
-//     { name: "L", inStock: true },
-//     { name: "XL", inStock: false },
-//   ],
-//   description: `
-//     <p>Le tee-shirt Basic est une nouvelle version honnête d'un classique. Ce tee-shirt est en coton super doux et pré-rétréci pour un vrai confort et une coupe fiable. Ils sont coupés et cousus à la main localement, avec une technique de teinture spéciale qui donne à chaque t-shirt son propre aspect.</p>
-//   `,
 const details = [
   "Seulement avec les meilleurs matériaux",
   "Fabriqué localement de manière responsable",
   "Pré-lavé",
   "Machine à froid avec des couleurs similaires",
 ];
-// };
+
 const policies = [
   {
     name: "Livraison internationale",
@@ -67,15 +53,15 @@ const reviews = {
   featured: [
     {
       id: 1,
-      title: "Can't say enough good things",
+      title: "Je n'en dirai jamais assez de bien",
       rating: 5,
       content: `
-        <p>I was really pleased with the overall shopping experience. My order even included a little personal, handwritten note, which delighted me!</p>
-        <p>The product quality is amazing, it looks and feel even better than I had anticipated. Brilliant stuff! I would gladly recommend this store to my friends. And, now that I think of it... I actually have, many times!</p>
+        <p>J'ai été très satisfaite de l'expérience d'achat globale. Ma commande comprenait même un petit mot personnel écrit à la main, ce qui m'a ravi !</p>
+        <p>La qualité du produit est incroyable, il a l'air et se sent encore mieux que ce que j'avais prévu. C'est génial ! Je recommanderais volontiers ce magasin à mes amis. Et, maintenant que j'y pense... En fait, je l'ai fait, plusieurs fois !</p>
       `,
       author: "Risako M",
-      date: "May 16, 2021",
-      datetime: "2021-01-06",
+      date: "16 juillet 2022",
+      datetime: "2022-07-16",
     },
     // More reviews...
   ],
@@ -95,17 +81,33 @@ const relatedProducts = [
 ];
 
 export default function Example() {
-  const { product } = useLoaderData() as LoaderData;
+  const { otherProductListItems, product } = useLoaderData() as LoaderData;
   const getColorById = (id: string) => {
     return product.colors.find((color) => color.id === id) as NonNullable<
       typeof product.colors[0]
     >;
   };
-  // on change color, change size to M
   const [selectedColor, setSelectedColor] = useState(product.colors[0].id);
   const [selectedSize, setSelectedSize] = useState(
-    product.colors.find((color) => color.id === selectedColor)!.sizes[2].id
+    product.colors.find((color) => color.id === selectedColor)?.sizes[2].id
   );
+  // on change color, change size to
+  useEffect(() => {
+    const defaultSize = product.colors.find(
+      (color) => color.id === selectedColor
+    )!.sizes[2];
+    if (defaultSize.amount) {
+      setSelectedSize(
+        product.colors.find((color) => color.id === selectedColor)?.sizes[2].id
+      );
+      return;
+    }
+    setSelectedSize(
+      product.colors
+        .find((color) => color.id === selectedColor)
+        ?.sizes.find((size) => !!size.amount)?.id
+    );
+  }, [selectedColor, product.colors]);
 
   return (
     <div className="bg-white">
@@ -125,7 +127,7 @@ export default function Example() {
               <h2 className="sr-only">Avis</h2>
               <div className="flex items-center">
                 <p className="text-sm text-gray-700">
-                  {reviews.average}
+                  {reviews.average.toLocaleString("fr-FR")}
                   <span className="sr-only"> sur 5 étoiles</span>
                 </p>
                 <div className="ml-1 flex items-center">
@@ -160,10 +162,14 @@ export default function Example() {
           {/* Image gallery */}
           <div className="mt-8 lg:col-span-7 lg:col-start-1 lg:row-span-3 lg:row-start-1 lg:mt-0">
             <h2 className="sr-only">Images</h2>
-
             <div>
               <img
-                src={getProductImageUrl(product)}
+                src={getProductImageUrl(
+                  product,
+                  product.colors.findIndex(
+                    (color) => color.id === selectedColor
+                  )
+                )}
                 alt={product.name}
                 className={classNames("rounded-lg")}
               />
@@ -396,33 +402,30 @@ export default function Example() {
             id="related-heading"
             className="text-lg font-medium text-gray-900"
           >
-            Les clients ont également acheté
+            Ces autres produits pourraient vous intéresser
           </h2>
 
           <div className="mt-6 grid grid-cols-1 gap-y-10 gap-x-6 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-            {relatedProducts.map((relatedProduct) => (
-              <div key={relatedProduct.id} className="group relative">
+            {otherProductListItems.map((otherProduct) => (
+              <div key={otherProduct.id} className="group relative">
                 <div className="min-h-80 aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-md group-hover:opacity-75 lg:aspect-none lg:h-80">
                   <img
-                    src={relatedProduct.imageSrc}
-                    alt={relatedProduct.imageAlt}
+                    src={getProductImageUrl(otherProduct)}
+                    alt={otherProduct.name}
                     className="h-full w-full object-cover object-center lg:h-full lg:w-full"
                   />
                 </div>
                 <div className="mt-4 flex justify-between">
                   <div>
                     <h3 className="text-sm text-gray-700">
-                      <a href={relatedProduct.href}>
+                      <a href={"/produits/" + otherProduct.slug}>
                         <span aria-hidden="true" className="absolute inset-0" />
-                        {relatedProduct.name}
+                        {otherProduct.name}
                       </a>
                     </h3>
-                    <p className="mt-1 text-sm text-gray-500">
-                      {relatedProduct.color}
-                    </p>
                   </div>
                   <p className="text-sm font-medium text-gray-900">
-                    {relatedProduct.price}
+                    {otherProduct.price} €
                   </p>
                 </div>
               </div>

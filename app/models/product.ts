@@ -56,3 +56,31 @@ export function getProductListItems() {
     orderBy: { order: "asc" },
   });
 }
+
+export function getOtherProductListItems({
+  slug
+}: Pick<Product, "slug">) {
+  return prisma.product.findMany({
+    select: {
+      id: true,
+      slug: true,
+      name: true,
+      description: true,
+      price: true,
+      colors: {
+        select: {
+          id: true,
+          hex: true,
+          slug: true,
+        },
+        orderBy: { order: "asc" },
+      }
+    },
+    orderBy: { order: "asc" },
+    where: {
+      NOT: {
+        slug,
+      }
+    }
+  });
+}

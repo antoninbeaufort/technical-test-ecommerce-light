@@ -19,6 +19,8 @@ model Product {
   updatedAt DateTime @updatedAt
 
   colors Color[]
+
+  @@unique([slug])
 }
 
 model Color {
