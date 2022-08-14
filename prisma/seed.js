@@ -90,9 +90,9 @@ async function seed() {
             name: "Corail clair",
             order: 1,
             sizes: {
-              create: sizes.map(size => ({
+              create: sizes.map((size, index) => ({
                 name: size,
-                order: 1,
+                order: index + 1,
                 amount: getRandomArbitrary(0, 20),
                 supplier: {
                   connect: {
@@ -121,9 +121,9 @@ async function seed() {
             name: "Pêche",
             order: 1,
             sizes: {
-              create: sizes.map(size => ({
+              create: sizes.map((size, index) => ({
                 name: size,
-                order: 1,
+                order: index + 1,
                 amount: getRandomArbitrary(0, 20),
                 supplier: {
                   connect: {
