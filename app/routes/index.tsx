@@ -20,14 +20,14 @@ export default function Index() {
       <div className="mx-auto max-w-7xl py-16 px-4 sm:py-24 sm:px-6 lg:px-8">
         <div className="sm:flex sm:items-baseline sm:justify-between">
           <h2 className="text-2xl font-bold tracking-tight text-gray-900">
-            Nos favoris
+            Nos produits
           </h2>
-          <a
+          {/* <a
             href="#"
             className="hidden text-sm font-semibold text-indigo-600 hover:text-indigo-500 sm:block"
           >
             Parcourir tous nos favoris<span aria-hidden="true"> &rarr;</span>
-          </a>
+          </a> */}
         </div>
 
         <div className="mt-6 grid grid-cols-1 gap-y-10 sm:grid-cols-3 sm:gap-y-0 sm:gap-x-6 lg:gap-x-8">
@@ -52,12 +52,12 @@ export default function Index() {
         </div>
 
         <div className="mt-6 sm:hidden">
-          <a
+          {/* <a
             href="#"
             className="block text-sm font-semibold text-indigo-600 hover:text-indigo-500"
           >
             Parcourir tous nos favoris<span aria-hidden="true"> &rarr;</span>
-          </a>
+          </a> */}
         </div>
       </div>
     </div>
