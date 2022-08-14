@@ -1,7 +1,7 @@
 import type { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { getProductListItems } from "~/models/product";
+import { getProductListItems } from "~/models/product.server";
 import { getProductImageUrl } from "~/utils";
 
 type LoaderData = {

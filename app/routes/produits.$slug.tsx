@@ -1,14 +1,38 @@
-import type { LoaderFunction } from "@remix-run/node";
+import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { useLoaderData } from "@remix-run/react";
+import { useFetcher, useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { useEffect, useState } from "react";
 import { RadioGroup } from "@headlessui/react";
 import { CurrencyDollarIcon, GlobeIcon } from "@heroicons/react/outline";
 import { StarIcon } from "@heroicons/react/solid";
 
-import { getOtherProductListItems, getProductBySlug } from "~/models/product";
+import {
+  getOtherProductListItems,
+  getProductBySlug,
+} from "~/models/product.server";
 import { classNames, getProductImageUrl } from "~/utils";
+
+export const action: ActionFunction = async ({ request }) => {
+  const formData = await request.formData();
+  const {
+    _action,
+    sizeId,
+    // quantity: rawQuantity,
+  } = Object.fromEntries(formData);
+  console.log(_action, sizeId);
+  if (typeof sizeId !== "string") throw new Error("sizeId is not a string");
+  // const { headers } = await getOrCreateCart(request);
+
+  return json(
+    {
+      success: true,
+    }
+    // {
+    //   headers,
+    // }
+  );
+};
 
 type LoaderData = {
   otherProductListItems: Awaited<ReturnType<typeof getOtherProductListItems>>;
@@ -66,21 +90,9 @@ const reviews = {
     // More reviews...
   ],
 };
-const relatedProducts = [
-  {
-    id: 1,
-    name: "Basic Tee",
-    href: "#",
-    imageSrc:
-      "https://tailwindui.com/img/ecommerce-images/product-page-01-related-product-02.jpg",
-    imageAlt: "Front of men's Basic Tee in white.",
-    price: "$35",
-    color: "Aspen White",
-  },
-  // More products...
-];
 
-export default function Example() {
+export default function Product() {
+  const fetcher = useFetcher();
   const { otherProductListItems, product } = useLoaderData() as LoaderData;
   const getColorById = (id: string) => {
     return product.colors.find((color) => color.id === id) as NonNullable<
@@ -177,7 +189,7 @@ export default function Example() {
           </div>
 
           <div className="mt-8 lg:col-span-5">
-            <form>
+            <fetcher.Form replace method="post">
               {/* Color picker */}
               <div>
                 <h2 className="text-sm font-medium text-gray-900">Couleur</h2>
@@ -233,6 +245,7 @@ export default function Example() {
                 </div>
 
                 <RadioGroup
+                  name="sizeId"
                   value={selectedSize}
                   onChange={setSelectedSize}
                   className="mt-2"
@@ -269,14 +282,15 @@ export default function Example() {
                   </div>
                 </RadioGroup>
               </div>
-
               <button
                 type="submit"
+                name="_action"
+                value="add"
                 className="mt-8 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 py-3 px-8 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
               >
                 Ajouter au panier
               </button>
-            </form>
+            </fetcher.Form>
 
             {/* Product details */}
             <div className="mt-10">

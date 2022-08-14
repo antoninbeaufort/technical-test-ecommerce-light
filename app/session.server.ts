@@ -1,5 +1,6 @@
 import { createCookieSessionStorage, redirect } from "@remix-run/node";
 import invariant from "tiny-invariant";
+import type { Cart } from "~/models/cart.server";
 
 invariant(process.env.SESSION_SECRET, "SESSION_SECRET must be set");
 
@@ -16,9 +17,14 @@ export const sessionStorage = createCookieSessionStorage({
 
 const CART_SESSION_KEY = "cart";
 
-export async function getSession(request: Request) {
+export async function getCartSession(request: Request) {
   const cookie = request.headers.get("Cookie");
-  return sessionStorage.getSession(cookie);
+  const session = await sessionStorage.getSession(cookie);
+  return {
+    getCart: () => session.get(CART_SESSION_KEY) ?? [],
+    setCart: (cart: Cart) => session.set(CART_SESSION_KEY, cart),
+    commit: () => sessionStorage.commitSession(session, { expires: new Date(2099, 1, 1) }),
+  };
 }
 
 // export async function getUserId(
