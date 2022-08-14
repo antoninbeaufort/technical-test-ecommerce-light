@@ -1,66 +1,54 @@
+import type { LoaderFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
+import invariant from "tiny-invariant";
 import { useState } from "react";
 import { RadioGroup } from "@headlessui/react";
 import { CurrencyDollarIcon, GlobeIcon } from "@heroicons/react/outline";
 import { StarIcon } from "@heroicons/react/solid";
-import { classNames } from "~/utils";
 
-const product = {
-  name: "T-shirt simple",
-  price: "35 €",
-  href: "#",
-  breadcrumbs: [
-    { id: 1, name: "Femmes", href: "#" },
-    { id: 2, name: "Vêtements", href: "#" },
-  ],
-  images: [
-    {
-      id: 1,
-      imageSrc:
-        "https://tailwindui.com/img/ecommerce-images/product-page-01-featured-product-shot.jpg",
-      imageAlt: "Back of women's Basic Tee in black.",
-      primary: true,
-    },
-    {
-      id: 2,
-      imageSrc:
-        "https://tailwindui.com/img/ecommerce-images/product-page-01-product-shot-01.jpg",
-      imageAlt: "Side profile of women's Basic Tee in black.",
-      primary: false,
-    },
-    {
-      id: 3,
-      imageSrc:
-        "https://tailwindui.com/img/ecommerce-images/product-page-01-product-shot-02.jpg",
-      imageAlt: "Front of women's Basic Tee in black.",
-      primary: false,
-    },
-  ],
-  colors: [
-    { name: "Black", bgColor: "bg-gray-900", selectedColor: "ring-gray-900" },
-    {
-      name: "Heather Grey",
-      bgColor: "bg-gray-400",
-      selectedColor: "ring-gray-400",
-    },
-  ],
-  sizes: [
-    { name: "XXS", inStock: true },
-    { name: "XS", inStock: true },
-    { name: "S", inStock: true },
-    { name: "M", inStock: true },
-    { name: "L", inStock: true },
-    { name: "XL", inStock: false },
-  ],
-  description: `
-    <p>Le tee-shirt Basic est une nouvelle version honnête d'un classique. Ce tee-shirt est en coton super doux et pré-rétréci pour un vrai confort et une coupe fiable. Ils sont coupés et cousus à la main localement, avec une technique de teinture spéciale qui donne à chaque t-shirt son propre aspect.</p>
-  `,
-  details: [
-    "Seulement avec les meilleurs matériaux",
-    "Fabriqué localement de manière responsable",
-    "Pré-lavé",
-    "Machine à froid avec des couleurs similaires",
-  ],
+import { getProductBySlug } from "~/models/product";
+import { classNames, getProductImageUrl } from "~/utils";
+
+type LoaderData = {
+  product: NonNullable<Awaited<ReturnType<typeof getProductBySlug>>>;
 };
+
+export const loader: LoaderFunction = async ({ params }) => {
+  invariant(params.slug, "slug not found");
+
+  const product = await getProductBySlug({ slug: params.slug });
+  if (!product) {
+    throw new Response("Not Found", { status: 404 });
+  }
+  return json<LoaderData>({ product });
+};
+
+//     { name: "Black", bgColor: "bg-gray-900", selectedColor: "ring-gray-900" },
+//     {
+//       name: "Heather Grey",
+//       bgColor: "bg-gray-400",
+//       selectedColor: "ring-gray-400",
+//     },
+//   ],
+//   sizes: [
+//     { name: "XXS", inStock: true },
+//     { name: "XS", inStock: true },
+//     { name: "S", inStock: true },
+//     { name: "M", inStock: true },
+//     { name: "L", inStock: true },
+//     { name: "XL", inStock: false },
+//   ],
+//   description: `
+//     <p>Le tee-shirt Basic est une nouvelle version honnête d'un classique. Ce tee-shirt est en coton super doux et pré-rétréci pour un vrai confort et une coupe fiable. Ils sont coupés et cousus à la main localement, avec une technique de teinture spéciale qui donne à chaque t-shirt son propre aspect.</p>
+//   `,
+const details = [
+  "Seulement avec les meilleurs matériaux",
+  "Fabriqué localement de manière responsable",
+  "Pré-lavé",
+  "Machine à froid avec des couleurs similaires",
+];
+// };
 const policies = [
   {
     name: "Livraison internationale",
@@ -107,8 +95,17 @@ const relatedProducts = [
 ];
 
 export default function Example() {
-  const [selectedColor, setSelectedColor] = useState(product.colors[0]);
-  const [selectedSize, setSelectedSize] = useState(product.sizes[2]);
+  const { product } = useLoaderData() as LoaderData;
+  const getColorById = (id: string) => {
+    return product.colors.find((color) => color.id === id) as NonNullable<
+      typeof product.colors[0]
+    >;
+  };
+  // on change color, change size to M
+  const [selectedColor, setSelectedColor] = useState(product.colors[0].id);
+  const [selectedSize, setSelectedSize] = useState(
+    product.colors.find((color) => color.id === selectedColor)!.sizes[2].id
+  );
 
   return (
     <div className="bg-white">
@@ -120,7 +117,7 @@ export default function Example() {
                 {product.name}
               </h1>
               <p className="text-xl font-medium text-gray-900">
-                {product.price}
+                {product.price} €
               </p>
             </div>
             {/* Reviews */}
@@ -164,20 +161,12 @@ export default function Example() {
           <div className="mt-8 lg:col-span-7 lg:col-start-1 lg:row-span-3 lg:row-start-1 lg:mt-0">
             <h2 className="sr-only">Images</h2>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 lg:grid-rows-3 lg:gap-8">
-              {product.images.map((image) => (
-                <img
-                  key={image.id}
-                  src={image.imageSrc}
-                  alt={image.imageAlt}
-                  className={classNames(
-                    image.primary
-                      ? "lg:col-span-2 lg:row-span-2"
-                      : "hidden lg:block",
-                    "rounded-lg"
-                  )}
-                />
-              ))}
+            <div>
+              <img
+                src={getProductImageUrl(product)}
+                alt={product.name}
+                className={classNames("rounded-lg")}
+              />
             </div>
           </div>
 
@@ -198,11 +187,11 @@ export default function Example() {
                   <div className="flex items-center space-x-3">
                     {product.colors.map((color) => (
                       <RadioGroup.Option
-                        key={color.name}
-                        value={color}
+                        key={color.id}
+                        value={color.id}
                         className={({ active, checked }) =>
                           classNames(
-                            color.selectedColor,
+                            "ring-indigo-600",
                             active && checked ? "ring ring-offset-1" : "",
                             !active && checked ? "ring-2" : "",
                             "relative -m-0.5 flex cursor-pointer items-center justify-center rounded-full p-0.5 focus:outline-none"
@@ -215,7 +204,7 @@ export default function Example() {
                         <span
                           aria-hidden="true"
                           className={classNames(
-                            color.bgColor,
+                            `bg-[${color.hex}]`,
                             "h-8 w-8 rounded-full border border-black border-opacity-10"
                           )}
                         />
@@ -246,13 +235,13 @@ export default function Example() {
                     Choisir une taille
                   </RadioGroup.Label>
                   <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
-                    {product.sizes.map((size) => (
+                    {getColorById(selectedColor).sizes.map((size) => (
                       <RadioGroup.Option
                         key={size.name}
-                        value={size}
+                        value={size.id}
                         className={({ active, checked }) =>
                           classNames(
-                            size.inStock
+                            size.amount > 0
                               ? "cursor-pointer focus:outline-none"
                               : "cursor-not-allowed opacity-25",
                             active
@@ -264,7 +253,7 @@ export default function Example() {
                             "flex items-center justify-center rounded-md border py-3 px-3 text-sm font-medium uppercase sm:flex-1"
                           )
                         }
-                        disabled={!size.inStock}
+                        disabled={!size.amount}
                       >
                         <RadioGroup.Label as="span">
                           {size.name}
@@ -300,7 +289,7 @@ export default function Example() {
 
               <div className="prose prose-sm mt-4 text-gray-500">
                 <ul role="list">
-                  {product.details.map((item) => (
+                  {details.map((item) => (
                     <li key={item}>{item}</li>
                   ))}
                 </ul>

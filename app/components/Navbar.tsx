@@ -70,7 +70,7 @@ const navigation = {
             name: "Tous les vêtements",
             items: [
               { name: "T-shirts simples", href: "#" },
-              { name: "T-shirts à motifs", href: "#" },
+              { name: "T-shirts à motif", href: "#" },
               { name: "Hauts", href: "#" },
               { name: "Bas", href: "#" },
               { name: "Maillots de bain", href: "#" },
@@ -125,7 +125,7 @@ const navigation = {
             "Drawstring top with elastic loop closure and textured interior padding.",
         },
         {
-          name: "T-shirts à motifs",
+          name: "T-shirts à motif",
           href: "#",
           imageSrc:
             "https://tailwindui.com/img/ecommerce-images/category-page-02-image-card-06.jpg",
@@ -161,7 +161,7 @@ const navigation = {
             name: "Tous les vêtements",
             items: [
               { name: "T-shirts simples", href: "#" },
-              { name: "T-shirts à motifs", href: "#" },
+              { name: "T-shirts à motif", href: "#" },
               { name: "Pantalons", href: "#" },
               { name: "Sweats à capuche", href: "#" },
               { name: "Maillots de bain", href: "#" },
@@ -589,7 +589,10 @@ export default function Navbar() {
 
                 {/* Cart */}
                 <div className="ml-4 flow-root lg:ml-6">
-                  <a href="#" className="group -m-2 flex items-center p-2">
+                  <a
+                    href="/panier"
+                    className="group -m-2 flex items-center p-2"
+                  >
                     <ShoppingBagIcon
                       className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
                       aria-hidden="true"
@@ -598,7 +601,7 @@ export default function Navbar() {
                       0
                     </span>
                     <span className="sr-only">
-                      éléments dans le panier, voir le panier
+                      produits dans le panier, voir le panier
                     </span>
                   </a>
                 </div>

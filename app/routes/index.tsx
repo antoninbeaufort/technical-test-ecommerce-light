@@ -1,36 +1,20 @@
-const products = [
-  {
-    id: 1,
-    name: "Black Basic Tee",
-    price: "32 €",
-    href: "/produits/black-basic-tee",
-    imageSrc:
-      "https://tailwindui.com/img/ecommerce-images/home-page-03-favorite-01.jpg",
-    imageAlt: "Model wearing women's black cotton crewneck tee.",
-  },
-  {
-    id: 2,
-    name: "Off-White Basic Tee",
-    price: "32 €",
-    href: "/produits/off-white-basic-tee",
-    imageSrc:
-      "https://tailwindui.com/img/ecommerce-images/home-page-03-favorite-02.jpg",
-    imageAlt: "Model wearing women's white cotton crewneck tee.",
-  },
-  {
-    id: 3,
-    name: "Mountains Artwork Tee",
-    price: "36 €",
-    href: "/mountains-artwork-tee",
-    imageSrc:
-      "https://tailwindui.com/img/ecommerce-images/home-page-03-favorite-03.jpg",
-    imageAlt:
-      "Model wearing women's red cotton crewneck tee with mountains artwork.",
-  },
-  // More products...
-];
+import type { LoaderFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
+import { getProductListItems } from "~/models/product";
+import { getProductImageUrl } from "~/utils";
 
-export default function Example() {
+type LoaderData = {
+  productListItems: Awaited<ReturnType<typeof getProductListItems>>;
+};
+
+export const loader: LoaderFunction = async () => {
+  const productListItems = await getProductListItems();
+  return json<LoaderData>({ productListItems });
+};
+
+export default function Index() {
+  const { productListItems } = useLoaderData() as LoaderData;
   return (
     <div className="bg-white">
       <div className="mx-auto max-w-7xl py-16 px-4 sm:py-24 sm:px-6 lg:px-8">
@@ -47,22 +31,22 @@ export default function Example() {
         </div>
 
         <div className="mt-6 grid grid-cols-1 gap-y-10 sm:grid-cols-3 sm:gap-y-0 sm:gap-x-6 lg:gap-x-8">
-          {products.map((product) => (
+          {productListItems.map((product) => (
             <div key={product.id} className="group relative">
               <div className="h-96 w-full overflow-hidden rounded-lg group-hover:opacity-75 sm:aspect-w-2 sm:aspect-h-3 sm:h-auto">
                 <img
-                  src={product.imageSrc}
-                  alt={product.imageAlt}
+                  src={getProductImageUrl(product)}
+                  alt={product.name}
                   className="h-full w-full object-cover object-center"
                 />
               </div>
               <h3 className="mt-4 text-base font-semibold text-gray-900">
-                <a href={product.href}>
+                <a href={"/produits/" + product.slug}>
                   <span className="absolute inset-0" />
                   {product.name}
                 </a>
               </h3>
-              <p className="mt-1 text-sm text-gray-500">{product.price}</p>
+              <p className="mt-1 text-sm text-gray-500">{product.price} €</p>
             </div>
           ))}
         </div>
@@ -72,7 +56,7 @@ export default function Example() {
             href="#"
             className="block text-sm font-semibold text-indigo-600 hover:text-indigo-500"
           >
-            Browse all favorites<span aria-hidden="true"> &rarr;</span>
+            Parcourir tous nos favoris<span aria-hidden="true"> &rarr;</span>
           </a>
         </div>
       </div>
