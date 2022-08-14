@@ -41,7 +41,7 @@ test("getCart & setCart work", async () => {
   ]);
 })
 
-test("addToCart return the cart with the new item", async () => {
+test("addToCart return the cart with the new item", () => {
   expect(
     addToCart(
       [],
@@ -115,7 +115,7 @@ test("addToCart return the cart with the new item", async () => {
   );
 })
 
-test("updateAmount works", async () => {
+test("updateAmount works", () => {
   expect(
     updateAmount(
       [
@@ -145,6 +145,114 @@ test("updateAmount works", async () => {
       }
     ]
   );
+})
+
+test.fails("updateAmount should fail if amount is not a number", async () => {
+  await expect(
+    updateAmount(
+      [
+        {
+          id: "string",
+          slug: "string",
+          name: "string",
+          color: "string",
+          size: "string",
+          amount: 1,
+          price: 32,
+        }
+      ],
+      "string",
+      "autre type"
+    )
+  ).rejects.toBe(1);
+  await expect(
+    updateAmount(
+      [
+        {
+          id: "string",
+          slug: "string",
+          name: "string",
+          color: "string",
+          size: "string",
+          amount: 1,
+          price: 32,
+        }
+      ],
+      "string",
+      false
+    )
+  ).rejects.toBe(1);
+  await expect(
+    updateAmount(
+      [
+        {
+          id: "string",
+          slug: "string",
+          name: "string",
+          color: "string",
+          size: "string",
+          amount: 1,
+          price: 32,
+        }
+      ],
+      "string",
+      true
+    )
+  ).rejects.toBe(1);
+  await expect(
+    updateAmount(
+      [
+        {
+          id: "string",
+          slug: "string",
+          name: "string",
+          color: "string",
+          size: "string",
+          amount: 1,
+          price: 32,
+        }
+      ],
+      "string",
+      []
+    )
+  ).rejects.toBe(1);
+  await expect(
+    updateAmount(
+      [
+        {
+          id: "string",
+          slug: "string",
+          name: "string",
+          color: "string",
+          size: "string",
+          amount: 1,
+          price: 32,
+        }
+      ],
+      "string",
+      {}
+    )
+  ).rejects.toBe(1);
+})
+
+test.fails("updateAmount should fail if size does not exist in cart", async () => {
+  await expect(
+    updateAmount(
+      [
+        {
+          id: "string",
+          slug: "string",
+          name: "string",
+          color: "string",
+          size: "string",
+          amount: 1,
+          price: 32,
+        }
+      ],
+      "n'existe pas",
+      1
+    )
+  ).rejects.toBe(1);
 })
 
 test("removeFromCart works", () => {
