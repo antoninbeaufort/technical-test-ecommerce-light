@@ -1,7 +1,10 @@
 import { useState } from "react";
 import { RadioGroup } from "@headlessui/react";
 import { CheckCircleIcon, TrashIcon } from "@heroicons/react/solid";
+import { useOutletContext } from "@remix-run/react";
 import { classNames } from "~/utils";
+import type { ContextType } from "~/root";
+import { numberFormatOptions } from "~/utils";
 
 const products = [
   {
@@ -22,13 +25,13 @@ const deliveryMethods = [
     id: 1,
     title: "Standard",
     turnaround: "4–10 jours ouvrés",
-    price: "5,00 €",
+    price: 5,
   },
   {
     id: 2,
     title: "Express",
     turnaround: "2–5 jours ouvrés",
-    price: "16,00 €",
+    price: 16,
   },
 ];
 
@@ -36,6 +39,15 @@ export default function Checkout() {
   const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState(
     deliveryMethods[0]
   );
+  const { cart } = useOutletContext<ContextType>();
+  const cartCount = cart.reduce((acc, item) => acc + item.amount, 0);
+  const subTotal = cart.reduce(
+    (acc, item) => acc + item.amount * item.color.product.price,
+    0
+  );
+
+  const total = subTotal + selectedDeliveryMethod.price;
+  const TVA = total * 0.2;
 
   return (
     <div className="bg-gray-50">
@@ -281,7 +293,10 @@ export default function Checkout() {
                                 as="span"
                                 className="mt-6 text-sm font-medium text-gray-900"
                               >
-                                {deliveryMethod.price}
+                                {deliveryMethod.price.toLocaleString(
+                                  "fr-FR",
+                                  numberFormatOptions
+                                )}
                               </RadioGroup.Description>
                             </span>
                           </span>
@@ -398,12 +413,14 @@ export default function Checkout() {
             <div className="mt-4 rounded-lg border border-gray-200 bg-white shadow-sm">
               <h3 className="sr-only">Produits dans votre panier</h3>
               <ul role="list" className="divide-y divide-gray-200">
-                {products.map((product) => (
-                  <li key={product.id} className="flex py-6 px-4 sm:px-6">
+                {cart.map((size) => (
+                  <li key={size.id} className="flex py-6 px-4 sm:px-6">
                     <div className="flex-shrink-0">
                       <img
-                        src={product.imageSrc}
-                        alt={product.imageAlt}
+                        src={`/produits/${
+                          size.color.slug ?? size.color.product.slug
+                        }.jpg`}
+                        alt={size.color.product.name}
                         className="w-20 rounded-md"
                       />
                     </div>
@@ -413,17 +430,17 @@ export default function Checkout() {
                         <div className="min-w-0 flex-1">
                           <h4 className="text-sm">
                             <a
-                              href={product.href}
+                              href={"/produits/" + size.color.product.slug}
                               className="font-medium text-gray-700 hover:text-gray-800"
                             >
-                              {product.title}
+                              {size.color.product.name}
                             </a>
                           </h4>
                           <p className="mt-1 text-sm text-gray-500">
-                            {product.color}
+                            {size.color.name}
                           </p>
                           <p className="mt-1 text-sm text-gray-500">
-                            {product.size}
+                            {size.name}
                           </p>
                         </div>
 
@@ -440,7 +457,10 @@ export default function Checkout() {
 
                       <div className="flex flex-1 items-end justify-between pt-2">
                         <p className="mt-1 text-sm font-medium text-gray-900">
-                          {product.price}
+                          {size.color.product.price.toLocaleString(
+                            "fr-FR",
+                            numberFormatOptions
+                          )}
                         </p>
 
                         <div className="ml-4">
@@ -470,20 +490,29 @@ export default function Checkout() {
               <dl className="space-y-6 border-t border-gray-200 py-6 px-4 sm:px-6">
                 <div className="flex items-center justify-between">
                   <dt className="text-sm">Sous-total</dt>
-                  <dd className="text-sm font-medium text-gray-900">64,00 €</dd>
+                  <dd className="text-sm font-medium text-gray-900">
+                    {subTotal.toLocaleString("fr-FR", numberFormatOptions)}
+                  </dd>
                 </div>
                 <div className="flex items-center justify-between">
                   <dt className="text-sm">Livraison</dt>
-                  <dd className="text-sm font-medium text-gray-900">5,00 €</dd>
+                  <dd className="text-sm font-medium text-gray-900">
+                    {selectedDeliveryMethod.price.toLocaleString(
+                      "fr-FR",
+                      numberFormatOptions
+                    )}
+                  </dd>
                 </div>
                 <div className="flex items-center justify-between">
                   <dt className="text-sm">TVA</dt>
-                  <dd className="text-sm font-medium text-gray-900">5,52 €</dd>
+                  <dd className="text-sm font-medium text-gray-900">
+                    {TVA.toLocaleString("fr-FR", numberFormatOptions)}
+                  </dd>
                 </div>
                 <div className="flex items-center justify-between border-t border-gray-200 pt-6">
                   <dt className="text-base font-medium">Total</dt>
                   <dd className="text-base font-medium text-gray-900">
-                    75,52 €
+                    {total.toLocaleString("fr-FR", numberFormatOptions)}
                   </dd>
                 </div>
               </dl>
@@ -491,6 +520,7 @@ export default function Checkout() {
               <div className="border-t border-gray-200 py-6 px-4 sm:px-6">
                 <button
                   type="submit"
+                  disabled={!cartCount}
                   className="w-full rounded-md border border-transparent bg-indigo-600 py-3 px-4 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
                 >
                   Confirmer la commande

@@ -58,3 +58,10 @@ export const getProductImageUrl = (
   const slug = product.colors[index].slug ?? product.slug;
   return `/produits/${slug}.jpg`;
 };
+
+export const numberFormatOptions = {
+  style: "currency",
+  currency: "EUR",
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+};

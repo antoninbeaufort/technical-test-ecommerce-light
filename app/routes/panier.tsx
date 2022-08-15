@@ -4,8 +4,14 @@ import {
   QuestionMarkCircleIcon,
   XIcon,
 } from "@heroicons/react/solid";
-import { useOutletContext } from "@remix-run/react";
+import { Form, useOutletContext } from "@remix-run/react";
+import type { ActionFunction } from "@remix-run/node";
+import { redirect } from "@remix-run/node";
 import type { ContextType } from "~/root";
+
+export const action: ActionFunction = () => {
+  return redirect("/commander");
+};
 
 export default function Cart() {
   const { cart } = useOutletContext<ContextType>();
@@ -24,7 +30,7 @@ export default function Cart() {
         <h1 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl sm:tracking-tight">
           Panier
         </h1>
-        <form className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
+        <div className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
           <section aria-labelledby="cart-heading" className="lg:col-span-7">
             <h2 id="cart-heading" className="sr-only">
               Produits dans votre panier
@@ -197,7 +203,7 @@ export default function Cart() {
               </div>
             </dl>
 
-            <div className="mt-6">
+            <Form method="post" className="mt-6">
               <button
                 type="submit"
                 disabled={!cartCount}
@@ -205,9 +211,9 @@ export default function Cart() {
               >
                 Procéder au paiement
               </button>
-            </div>
+            </Form>
           </section>
-        </form>
+        </div>
       </div>
     </div>
   );
