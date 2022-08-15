@@ -15,7 +15,13 @@ import {
   useTransition,
 } from "@remix-run/react";
 import invariant from "tiny-invariant";
-import { classNames, validateEmail } from "~/utils";
+import {
+  classNames,
+  validateCardExpiration,
+  validateCardNumber,
+  validateCVC,
+  validateEmail,
+} from "~/utils";
 import type { ContextType } from "~/root";
 import { numberFormatOptions } from "~/utils";
 import { createOrder } from "~/models/order.server";
@@ -92,14 +98,14 @@ export const action: ActionFunction = async ({ request }) => {
       city: city ? null : "Veuillez entrer une ville.",
       country: country ? null : "Veuillez entrer un pays.",
       phone: phone ? null : "Veuillez entrer un numéro de téléphone.",
-      cardNumber: cardNumber
+      cardNumber: validateCardNumber(cardNumber)
         ? null
         : "Veuillez entrer un numéro de carte bancaire valide.",
       nameOnCard: nameOnCard ? null : "Veuillez entrer un nom.",
-      expirationDate: expirationDate
+      expirationDate: validateCardExpiration(expirationDate)
         ? null
-        : "Veuillez entrer une date d'expiration de carte bancaire.",
-      cvc: cvc ? null : "Veuillez entrer un CVC.",
+        : "Veuillez entrer une date d'expiration de carte bancaire valide.",
+      cvc: validateCVC(cvc) ? null : "Veuillez entrer un CVC.",
     },
     formError: null,
   };
