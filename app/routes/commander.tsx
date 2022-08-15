@@ -51,7 +51,9 @@ type ActionData =
         country: null | string;
         phone: null | string;
         cardNumber: null | string;
+        nameOnCard: null | string;
         expirationDate: null | string;
+        cvc: null | string;
       };
       formError: string | null;
     }
@@ -73,7 +75,9 @@ export const action: ActionFunction = async ({ request }) => {
   const deliveryMethod = formData.get("delivery-method[title]");
   const deliveryMethodPrice = formData.get("delivery-method[price]");
   const cardNumber = formData.get("card-number");
+  const nameOnCard = formData.get("name-on-card");
   const expirationDate = formData.get("expiration-date");
+  const cvc = formData.get("cvc");
 
   // validate types
   const errors: ActionData = {
@@ -91,9 +95,11 @@ export const action: ActionFunction = async ({ request }) => {
       cardNumber: cardNumber
         ? null
         : "Veuillez entrer un numéro de carte bancaire valide.",
+      nameOnCard: nameOnCard ? null : "Veuillez entrer un nom.",
       expirationDate: expirationDate
         ? null
         : "Veuillez entrer une date d'expiration de carte bancaire.",
+      cvc: cvc ? null : "Veuillez entrer un CVC.",
     },
     formError: null,
   };
@@ -321,6 +327,11 @@ export default function Checkout() {
                       className="block text-sm font-medium text-gray-700"
                     >
                       Prénom
+                      {errors?.fieldErrors.firstName ? (
+                        <em className="text-red-600">
+                          {errors.fieldErrors.firstName}
+                        </em>
+                      ) : null}
                     </label>
                     <div className="mt-1">
                       <input
@@ -340,6 +351,11 @@ export default function Checkout() {
                       className="block text-sm font-medium text-gray-700"
                     >
                       Nom
+                      {errors?.fieldErrors.lastName ? (
+                        <em className="text-red-600">
+                          {errors.fieldErrors.lastName}
+                        </em>
+                      ) : null}
                     </label>
                     <div className="mt-1">
                       <input
@@ -376,6 +392,11 @@ export default function Checkout() {
                       className="block text-sm font-medium text-gray-700"
                     >
                       Adresse
+                      {errors?.fieldErrors.address ? (
+                        <em className="text-red-600">
+                          {errors.fieldErrors.address}
+                        </em>
+                      ) : null}
                     </label>
                     <div className="mt-1">
                       <input
@@ -412,6 +433,11 @@ export default function Checkout() {
                       className="block text-sm font-medium text-gray-700"
                     >
                       Code postal
+                      {errors?.fieldErrors.postalCode ? (
+                        <em className="text-red-600">
+                          {errors.fieldErrors.postalCode}
+                        </em>
+                      ) : null}
                     </label>
                     <div className="mt-1">
                       <input
@@ -431,6 +457,11 @@ export default function Checkout() {
                       className="block text-sm font-medium text-gray-700"
                     >
                       Ville
+                      {errors?.fieldErrors.city ? (
+                        <em className="text-red-600">
+                          {errors.fieldErrors.city}
+                        </em>
+                      ) : null}
                     </label>
                     <div className="mt-1">
                       <input
@@ -450,6 +481,11 @@ export default function Checkout() {
                       className="block text-sm font-medium text-gray-700"
                     >
                       Pays
+                      {errors?.fieldErrors.country ? (
+                        <em className="text-red-600">
+                          {errors.fieldErrors.country}
+                        </em>
+                      ) : null}
                     </label>
                     <div className="mt-1">
                       <select
@@ -472,6 +508,11 @@ export default function Checkout() {
                       className="block text-sm font-medium text-gray-700"
                     >
                       Téléphone
+                      {errors?.fieldErrors.phone ? (
+                        <em className="text-red-600">
+                          {errors.fieldErrors.phone}
+                        </em>
+                      ) : null}
                     </label>
                     <div className="mt-1">
                       <input
@@ -572,6 +613,11 @@ export default function Checkout() {
                       className="block text-sm font-medium text-gray-700"
                     >
                       Numéro de carte
+                      {errors?.fieldErrors.cardNumber ? (
+                        <em className="text-red-600">
+                          {errors.fieldErrors.cardNumber}
+                        </em>
+                      ) : null}
                     </label>
                     <div className="mt-1">
                       <input
@@ -591,6 +637,11 @@ export default function Checkout() {
                       className="block text-sm font-medium text-gray-700"
                     >
                       Nom
+                      {errors?.fieldErrors.nameOnCard ? (
+                        <em className="text-red-600">
+                          {errors.fieldErrors.nameOnCard}
+                        </em>
+                      ) : null}
                     </label>
                     <div className="mt-1">
                       <input
@@ -610,6 +661,11 @@ export default function Checkout() {
                       className="block text-sm font-medium text-gray-700"
                     >
                       Date d'expiration (MM/AA)
+                      {errors?.fieldErrors.expirationDate ? (
+                        <em className="text-red-600">
+                          {errors.fieldErrors.expirationDate}
+                        </em>
+                      ) : null}
                     </label>
                     <div className="mt-1">
                       <input
@@ -629,6 +685,11 @@ export default function Checkout() {
                       className="block text-sm font-medium text-gray-700"
                     >
                       CVC
+                      {errors?.fieldErrors.cvc ? (
+                        <em className="text-red-600">
+                          {errors.fieldErrors.cvc}
+                        </em>
+                      ) : null}
                     </label>
                     <div className="mt-1">
                       <input
