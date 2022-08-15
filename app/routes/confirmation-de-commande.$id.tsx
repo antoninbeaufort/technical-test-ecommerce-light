@@ -1,27 +1,37 @@
-/* This example requires Tailwind CSS v2.0+ */
-const products = [
-  {
-    id: 1,
-    name: "Basic Tee",
-    href: "#",
-    price: "36,00 €",
-    color: "Charcoal",
-    size: "L",
-    imageSrc:
-      "https://tailwindui.com/img/ecommerce-images/confirmation-page-06-product-01.jpg",
-    imageAlt: "Model wearing men's charcoal basic tee in large.",
-  },
-  // More products...
-];
+import type { LoaderFunction } from "@remix-run/node";
+import { json } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
+import invariant from "tiny-invariant";
+import type { Cart } from "~/models/cart.server";
+import { getOrder } from "~/models/order.server";
+import { numberFormatOptions } from "~/utils";
+
+type LoaderData = {
+  order: NonNullable<Awaited<ReturnType<typeof getOrder>>>;
+};
+export const loader: LoaderFunction = async ({ params }) => {
+  invariant(params.id, "id not found");
+
+  const order = await getOrder({ id: params.id });
+  if (!order) {
+    throw new Response("Not found", { status: 404 });
+  }
+
+  return json<LoaderData>({
+    order,
+  });
+};
 
 export default function OrderConfirmation() {
+  const { order } = useLoaderData() as LoaderData;
+
   return (
     <>
       <main className="relative lg:min-h-full">
         <div className="h-80 overflow-hidden lg:absolute lg:h-full lg:w-1/2 lg:pr-4 xl:pr-12">
           <img
             src="https://tailwindui.com/img/ecommerce-images/confirmation-page-06-hero.jpg"
-            alt="TODO"
+            alt="Étagères avec de la décoration et des vêtements"
             className="h-full w-full object-cover object-center"
           />
         </div>
@@ -37,7 +47,7 @@ export default function OrderConfirmation() {
               </p>
               <p className="mt-2 text-base text-gray-500">
                 Nous apprécions votre commande, nous sommes en train de la
-                traiter. Alors accrochez-vous et nous vous enverrons une
+                traiter. Alors veuillez patienter et nous vous enverrons une
                 confirmation très bientôt !
               </p>
 
@@ -50,22 +60,30 @@ export default function OrderConfirmation() {
                 role="list"
                 className="mt-6 divide-y divide-gray-200 border-t border-gray-200 text-sm font-medium text-gray-500"
               >
-                {products.map((product) => (
-                  <li key={product.id} className="flex space-x-6 py-6">
+                {(order.line_items as Cart).map((size) => (
+                  <li key={size.id} className="flex space-x-6 py-6">
                     <img
-                      src={product.imageSrc}
-                      alt={product.imageAlt}
+                      src={`/produits/${
+                        size.color.slug ?? size.color.product.slug
+                      }.jpg`}
+                      alt={size.color.product.name}
                       className="h-24 w-24 flex-none rounded-md bg-gray-100 object-cover object-center"
                     />
                     <div className="flex-auto space-y-1">
                       <h3 className="text-gray-900">
-                        <a href={product.href}>{product.name}</a>
+                        <a href={"/produits/" + size.color.product.slug}>
+                          {size.color.product.name}
+                        </a>
                       </h3>
-                      <p>{product.color}</p>
-                      <p>{product.size}</p>
+                      <p>{size.color.name}</p>
+                      <p>{size.name}</p>
+                      <p>x{size.amount}</p>
                     </div>
                     <p className="flex-none font-medium text-gray-900">
-                      {product.price}
+                      {size.color.product.price.toLocaleString(
+                        "fr-FR",
+                        numberFormatOptions
+                      )}
                     </p>
                   </li>
                 ))}
@@ -74,22 +92,42 @@ export default function OrderConfirmation() {
               <dl className="space-y-6 border-t border-gray-200 pt-6 text-sm font-medium text-gray-500">
                 <div className="flex justify-between">
                   <dt>Sous-total</dt>
-                  <dd className="text-gray-900">72,00 €</dd>
+                  <dd className="text-gray-900">
+                    {order.amount_subtotal.toLocaleString(
+                      "fr-FR",
+                      numberFormatOptions
+                    )}
+                  </dd>
                 </div>
 
                 <div className="flex justify-between">
                   <dt>Livraison</dt>
-                  <dd className="text-gray-900">8,00 €</dd>
+                  <dd className="text-gray-900">
+                    {order.total_details_amount_shipping.toLocaleString(
+                      "fr-FR",
+                      numberFormatOptions
+                    )}
+                  </dd>
                 </div>
 
                 <div className="flex justify-between">
                   <dt>TVA</dt>
-                  <dd className="text-gray-900">6,40 €</dd>
+                  <dd className="text-gray-900">
+                    {order.total_details_amount_tax.toLocaleString(
+                      "fr-FR",
+                      numberFormatOptions
+                    )}
+                  </dd>
                 </div>
 
                 <div className="flex items-center justify-between border-t border-gray-200 pt-6 text-gray-900">
                   <dt className="text-base">Total</dt>
-                  <dd className="text-base">86,40 €</dd>
+                  <dd className="text-base">
+                    {order.amount_total.toLocaleString(
+                      "fr-FR",
+                      numberFormatOptions
+                    )}
+                  </dd>
                 </div>
               </dl>
 
@@ -100,9 +138,13 @@ export default function OrderConfirmation() {
                   </dt>
                   <dd className="mt-2">
                     <address className="not-italic">
-                      <span className="block">Kristin Watson</span>
-                      <span className="block">7363 Cynthia Pass</span>
-                      <span className="block">Toronto, ON N3Y 4H8</span>
+                      <span className="block">
+                        {order.firstName} {order.lastName}
+                      </span>
+                      <span className="block">{order.address}</span>
+                      <span className="block">
+                        {order.postalCode} {order.city}
+                      </span>
                     </address>
                   </dd>
                 </div>
@@ -129,8 +171,10 @@ export default function OrderConfirmation() {
                       <p className="sr-only">Visa</p>
                     </div>
                     <div className="flex-auto">
-                      <p className="text-gray-900">Terminant en 4242</p>
-                      <p>Expiration 12 / 22</p>
+                      <p className="text-gray-900">
+                        Terminant en {order.cbLastFourNumbers}
+                      </p>
+                      <p>Expiration {order.cbExpirationDate}</p>
                     </div>
                   </dd>
                 </div>
@@ -138,7 +182,7 @@ export default function OrderConfirmation() {
 
               <div className="mt-16 border-t border-gray-200 py-6 text-right">
                 <a
-                  href="#"
+                  href="/"
                   className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
                 >
                   Continuer le shopping<span aria-hidden="true"> &rarr;</span>

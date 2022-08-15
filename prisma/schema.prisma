@@ -60,19 +60,23 @@ model Order {
   email String
   firstName String
   lastName String
-  company String
+  company String?
+  apartment String?
   address String
   postalCode String
   city String
   country String
   phone String
 
+  shipping_method String
   total_details_amount_shipping Float
   total_details_amount_tax Float
   amount_subtotal Float
   amount_total Float
   status String
   line_items Json
+  cbLastFourNumbers String
+  cbExpirationDate String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

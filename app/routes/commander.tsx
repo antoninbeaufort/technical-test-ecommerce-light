@@ -1,25 +1,21 @@
+import type { ActionFunction } from "@remix-run/node";
+import { json, redirect } from "@remix-run/node";
 import { useState } from "react";
 import { RadioGroup } from "@headlessui/react";
 import { CheckCircleIcon, TrashIcon } from "@heroicons/react/solid";
-import { useOutletContext } from "@remix-run/react";
-import { classNames } from "~/utils";
+import {
+  Form,
+  useActionData,
+  useOutletContext,
+  useTransition,
+} from "@remix-run/react";
+import invariant from "tiny-invariant";
+import { classNames, validateEmail } from "~/utils";
 import type { ContextType } from "~/root";
 import { numberFormatOptions } from "~/utils";
+import { createOrder } from "~/models/order.server";
+import { getCart } from "~/models/cart.server";
 
-const products = [
-  {
-    id: 1,
-    title: "Basic Tee",
-    href: "#",
-    price: "32,00 €",
-    color: "Black",
-    size: "Large",
-    imageSrc:
-      "https://tailwindui.com/img/ecommerce-images/checkout-page-02-product-01.jpg",
-    imageAlt: "Front of men's Basic Tee in black.",
-  },
-  // More products...
-];
 const deliveryMethods = [
   {
     id: 1,
@@ -35,7 +31,137 @@ const deliveryMethods = [
   },
 ];
 
+type ActionData =
+  | {
+      email: null | string;
+      firstName: null | string;
+      lastName: null | string;
+      address: null | string;
+      postalCode: null | string;
+      city: null | string;
+      country: null | string;
+      phone: null | string;
+      cardNumber: null | string;
+      expirationDate: null | string;
+    }
+  | undefined;
+export const action: ActionFunction = async ({ request }) => {
+  const formData = await request.formData();
+
+  const email = formData.get("email-address");
+  const firstName = formData.get("first-name");
+  const lastName = formData.get("last-name");
+  const company = formData.get("company");
+  const address = formData.get("address");
+  const apartment = formData.get("apartment");
+  const postalCode = formData.get("postal-code");
+  const city = formData.get("city");
+  const country = formData.get("country");
+  const phone = formData.get("phone");
+  const deliveryMethod = formData.get("delivery-method[title]");
+  const deliveryMethodPrice = formData.get("delivery-method[price]");
+  const cardNumber = formData.get("card-number");
+  const expirationDate = formData.get("expiration-date");
+
+  console.log(deliveryMethod);
+
+  // validate types
+  const errors: ActionData = {
+    email: validateEmail(email)
+      ? null
+      : "Veuillez entrer une adresse email valide.",
+    firstName: firstName ? null : "Veuillez entrer un prénom.",
+    lastName: lastName ? null : "Veuillez entrer un nom.",
+    address: address ? null : "Veuillez entrer une adresse.",
+    postalCode: postalCode ? null : "Veuillez entrer un code postal.",
+    city: city ? null : "Veuillez entrer une ville.",
+    country: country ? null : "Veuillez entrer un pays.",
+    phone: phone ? null : "Veuillez entrer un numéro de téléphone.",
+    cardNumber: cardNumber
+      ? null
+      : "Veuillez entrer un numéro de carte bancaire valide.",
+    expirationDate: expirationDate
+      ? null
+      : "Veuillez entrer une date d'expiration de carte bancaire.",
+  };
+  const hasErrors = Object.values(errors).some((errorMessage) => errorMessage);
+  if (hasErrors) {
+    return json<ActionData>(errors);
+  }
+
+  invariant(typeof email === "string", "email must be a string");
+  invariant(typeof firstName === "string", "firstName must be a string");
+  invariant(typeof lastName === "string", "lastName must be a string");
+
+  invariant(typeof address === "string", "address must be a string");
+
+  invariant(typeof postalCode === "string", "postalCode must be a string");
+  invariant(typeof city === "string", "city must be a string");
+  invariant(typeof country === "string", "country must be a string");
+  invariant(typeof phone === "string", "phone must be a string");
+  invariant(typeof cardNumber === "string", "cardNumber must be a string");
+  invariant(
+    typeof expirationDate === "string",
+    "expirationDate must be a string"
+  );
+  invariant(
+    typeof deliveryMethod === "string",
+    "deliveryMethod must be a string"
+  );
+  invariant(
+    typeof deliveryMethodPrice === "string",
+    "deliveryMethodPrice must be a string"
+  );
+  invariant(
+    Number(deliveryMethodPrice) ===
+      deliveryMethods.find((dm) => dm.title === deliveryMethod)?.price,
+    "deliveryMethodPrice must match server price"
+  );
+
+  const cart = await getCart(request);
+  // create an order using cart if cart matching server data
+  // TODO: correct price, amount under stock, etc.
+
+  // TODO: remove items from stock
+
+  const subTotal = cart.reduce(
+    (acc, item) => acc + item.amount * item.color.product.price,
+    0
+  );
+
+  const shippingPrice = Number(deliveryMethodPrice);
+  const total = subTotal + shippingPrice;
+  const TVA = total * 0.2;
+
+  // empty cart
+  const order = await createOrder({
+    email,
+    firstName,
+    lastName,
+    ...(typeof company === "string" && company && { company }),
+    ...(typeof apartment === "string" && apartment && { apartment }),
+    address,
+    postalCode,
+    city,
+    country,
+    phone,
+    shipping_method: deliveryMethod,
+    total_details_amount_shipping: shippingPrice,
+    total_details_amount_tax: TVA,
+    amount_subtotal: subTotal,
+    amount_total: total,
+    status: "PROCESSING",
+    line_items: cart,
+    cbLastFourNumbers: cardNumber.slice(-4),
+    cbExpirationDate: expirationDate,
+  });
+  return redirect(`/confirmation-de-commande/${order.id}`); // or return an error
+};
+
 export default function Checkout() {
+  const errors = useActionData() as ActionData;
+  const transition = useTransition();
+  const isProcessing = Boolean(transition.submission);
   const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState(
     deliveryMethods[0]
   );
@@ -54,7 +180,10 @@ export default function Checkout() {
       <div className="mx-auto max-w-2xl px-4 pt-16 pb-24 sm:px-6 lg:max-w-7xl lg:px-8">
         <h2 className="sr-only">Procéder au paiement</h2>
 
-        <form className="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16">
+        <Form
+          method="post"
+          className="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16"
+        >
           <div>
             <div>
               <h2 className="text-lg font-medium text-gray-900">
@@ -66,10 +195,14 @@ export default function Checkout() {
                   htmlFor="email-address"
                   className="block text-sm font-medium text-gray-700"
                 >
-                  Adresse e-mail
+                  Adresse e-mail{" "}
+                  {errors?.email ? (
+                    <em className="text-red-600">{errors.email}</em>
+                  ) : null}
                 </label>
                 <div className="mt-1">
                   <input
+                    required
                     type="email"
                     id="email-address"
                     name="email-address"
@@ -95,6 +228,7 @@ export default function Checkout() {
                   </label>
                   <div className="mt-1">
                     <input
+                      required
                       type="text"
                       id="first-name"
                       name="first-name"
@@ -113,6 +247,7 @@ export default function Checkout() {
                   </label>
                   <div className="mt-1">
                     <input
+                      required
                       type="text"
                       id="last-name"
                       name="last-name"
@@ -148,6 +283,7 @@ export default function Checkout() {
                   </label>
                   <div className="mt-1">
                     <input
+                      required
                       type="text"
                       name="address"
                       id="address"
@@ -183,6 +319,7 @@ export default function Checkout() {
                   </label>
                   <div className="mt-1">
                     <input
+                      required
                       type="text"
                       name="postal-code"
                       id="postal-code"
@@ -201,6 +338,7 @@ export default function Checkout() {
                   </label>
                   <div className="mt-1">
                     <input
+                      required
                       type="text"
                       name="city"
                       id="city"
@@ -219,6 +357,7 @@ export default function Checkout() {
                   </label>
                   <div className="mt-1">
                     <select
+                      required
                       id="country"
                       name="country"
                       autoComplete="country-name"
@@ -240,6 +379,7 @@ export default function Checkout() {
                   </label>
                   <div className="mt-1">
                     <input
+                      required
                       type="text"
                       name="phone"
                       id="phone"
@@ -253,6 +393,7 @@ export default function Checkout() {
 
             <div className="mt-10 border-t border-gray-200 pt-10">
               <RadioGroup
+                name="delivery-method"
                 value={selectedDeliveryMethod}
                 onChange={setSelectedDeliveryMethod}
               >
@@ -338,6 +479,7 @@ export default function Checkout() {
                   </label>
                   <div className="mt-1">
                     <input
+                      required
                       type="text"
                       id="card-number"
                       name="card-number"
@@ -356,6 +498,7 @@ export default function Checkout() {
                   </label>
                   <div className="mt-1">
                     <input
+                      required
                       type="text"
                       id="name-on-card"
                       name="name-on-card"
@@ -374,6 +517,7 @@ export default function Checkout() {
                   </label>
                   <div className="mt-1">
                     <input
+                      required
                       type="text"
                       name="expiration-date"
                       id="expiration-date"
@@ -392,6 +536,7 @@ export default function Checkout() {
                   </label>
                   <div className="mt-1">
                     <input
+                      required
                       type="text"
                       name="cvc"
                       id="cvc"
@@ -520,15 +665,17 @@ export default function Checkout() {
               <div className="border-t border-gray-200 py-6 px-4 sm:px-6">
                 <button
                   type="submit"
-                  disabled={!cartCount}
+                  disabled={!cartCount || isProcessing}
                   className="w-full rounded-md border border-transparent bg-indigo-600 py-3 px-4 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
                 >
-                  Confirmer la commande
+                  {isProcessing
+                    ? "Confirmation en cours..."
+                    : "Confirmer la commande"}
                 </button>
               </div>
             </div>
           </div>
-        </form>
+        </Form>
       </div>
     </div>
   );
