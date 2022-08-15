@@ -22,7 +22,6 @@ export const action: ActionFunction = async ({ request }) => {
     sizeId,
     // quantity: rawQuantity,
   } = Object.fromEntries(formData);
-  console.log(_action, sizeId);
   if (typeof sizeId !== "string") throw new Error("sizeId is not a string");
   let cart = await getCart(request);
   if (_action === "add") {
