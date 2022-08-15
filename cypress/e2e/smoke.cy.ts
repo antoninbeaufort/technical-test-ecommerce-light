@@ -62,7 +62,7 @@ describe("smoke tests", () => {
     cy.location("pathname").should("contains", "confirmation-de-commande");
   })
 
-  it.only("should allow you checkout and simulate an error", () => {
+  it("should allow you checkout and simulate an error", () => {
     cy.visitAndCheck("/produits/t-shirt-simple");
     cy.findByRole("button", { name: /ajouter au panier/i }).click();
     cy.get("[href='/panier']").click();
