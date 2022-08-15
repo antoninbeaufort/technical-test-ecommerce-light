@@ -15,13 +15,25 @@ test("getCart & setCart work", async () => {
   const cookie = await setCart(new Request('http://localhost:3000'), [
     {
       id: "string",
-      slug: "string",
       name: "string",
-      color: "string",
-      size: "string",
+      color: {
+        id: "string",
+        hex: "string",
+        name: "string",
+        slug: "string",
+        product: {
+          id: "string",
+          slug: "string",
+          name: "string",
+          price: 32,
+        }
+      },
+      supplier: {
+        name: "string",
+        address: "string",
+      },
       amount: 1,
-      price: 32,
-    }
+    },
   ]);
 
   expect(await getCart(new Request('http://localhost:3000', {
@@ -31,13 +43,25 @@ test("getCart & setCart work", async () => {
   }))).toEqual([
     {
       id: "string",
-      slug: "string",
       name: "string",
-      color: "string",
-      size: "string",
+      color: {
+        id: "string",
+        hex: "string",
+        name: "string",
+        slug: "string",
+        product: {
+          id: "string",
+          slug: "string",
+          name: "string",
+          price: 32,
+        }
+      },
+      supplier: {
+        name: "string",
+        address: "string",
+      },
       amount: 1,
-      price: 32,
-    }
+    },
   ]);
 })
 
@@ -47,25 +71,49 @@ test("addToCart return the cart with the new item", () => {
       [],
       {
         id: "string",
-        slug: "string",
         name: "string",
-        color: "string",
-        size: "string",
+        color: {
+          id: "string",
+          hex: "string",
+          name: "string",
+          slug: "string",
+          product: {
+            id: "string",
+            slug: "string",
+            name: "string",
+            price: 32,
+          }
+        },
+        supplier: {
+          name: "string",
+          address: "string",
+        },
         amount: 1,
-        price: 32,
       },
     )
   ).toEqual(
     [
       {
         id: "string",
-        slug: "string",
         name: "string",
-        color: "string",
-        size: "string",
+        color: {
+          id: "string",
+          hex: "string",
+          name: "string",
+          slug: "string",
+          product: {
+            id: "string",
+            slug: "string",
+            name: "string",
+            price: 32,
+          }
+        },
+        supplier: {
+          name: "string",
+          address: "string",
+        },
         amount: 1,
-        price: 32,
-      }
+      },
     ]
   );
   expect(
@@ -73,44 +121,92 @@ test("addToCart return the cart with the new item", () => {
       [
         {
           id: "existingString",
-          slug: "existingString",
           name: "existingString",
-          color: "existingString",
-          size: "existingString",
+          color: {
+            id: "existingString",
+            hex: "existingString",
+            name: "existingString",
+            slug: "existingString",
+            product: {
+              id: "existingString",
+              slug: "existingString",
+              name: "existingString",
+              price: 80,
+            }
+          },
+          supplier: {
+            name: "existingString",
+            address: "existingString",
+          },
           amount: 8,
-          price: 80,
         }
       ],
       {
         id: "string",
-        slug: "string",
         name: "string",
-        color: "string",
-        size: "string",
+        color: {
+          id: "string",
+          hex: "string",
+          name: "string",
+          slug: "string",
+          product: {
+            id: "string",
+            slug: "string",
+            name: "string",
+            price: 32,
+          }
+        },
+        supplier: {
+          name: "string",
+          address: "string",
+        },
         amount: 1,
-        price: 32,
       },
     )
   ).toEqual(
     [
       {
         id: "existingString",
-        slug: "existingString",
         name: "existingString",
-        color: "existingString",
-        size: "existingString",
+        color: {
+          id: "existingString",
+          hex: "existingString",
+          name: "existingString",
+          slug: "existingString",
+          product: {
+            id: "existingString",
+            slug: "existingString",
+            name: "existingString",
+            price: 80,
+          }
+        },
+        supplier: {
+          name: "existingString",
+          address: "existingString",
+        },
         amount: 8,
-        price: 80,
       },
       {
         id: "string",
-        slug: "string",
         name: "string",
-        color: "string",
-        size: "string",
+        color: {
+          id: "string",
+          hex: "string",
+          name: "string",
+          slug: "string",
+          product: {
+            id: "string",
+            slug: "string",
+            name: "string",
+            price: 32,
+          }
+        },
+        supplier: {
+          name: "string",
+          address: "string",
+        },
         amount: 1,
-        price: 32,
-      }
+      },
     ]
   );
 })
@@ -121,13 +217,25 @@ test("updateAmount works", () => {
       [
         {
           id: "string",
-          slug: "string",
           name: "string",
-          color: "string",
-          size: "string",
+          color: {
+            id: "string",
+            hex: "string",
+            name: "string",
+            slug: "string",
+            product: {
+              id: "string",
+              slug: "string",
+              name: "string",
+              price: 32,
+            }
+          },
+          supplier: {
+            name: "string",
+            address: "string",
+          },
           amount: 1,
-          price: 32,
-        }
+        },
       ],
       "string",
       2
@@ -136,13 +244,25 @@ test("updateAmount works", () => {
     [
       {
         id: "string",
-        slug: "string",
         name: "string",
-        color: "string",
-        size: "string",
+        color: {
+          id: "string",
+          hex: "string",
+          name: "string",
+          slug: "string",
+          product: {
+            id: "string",
+            slug: "string",
+            name: "string",
+            price: 32,
+          }
+        },
+        supplier: {
+          name: "string",
+          address: "string",
+        },
         amount: 2,
-        price: 32,
-      }
+      },
     ]
   );
 })
@@ -153,13 +273,25 @@ test.fails("updateAmount should fail if amount is not a number", async () => {
       [
         {
           id: "string",
-          slug: "string",
           name: "string",
-          color: "string",
-          size: "string",
+          color: {
+            id: "string",
+            hex: "string",
+            name: "string",
+            slug: "string",
+            product: {
+              id: "string",
+              slug: "string",
+              name: "string",
+              price: 32,
+            }
+          },
+          supplier: {
+            name: "string",
+            address: "string",
+          },
           amount: 1,
-          price: 32,
-        }
+        },
       ],
       "string",
       "autre type"
@@ -170,13 +302,25 @@ test.fails("updateAmount should fail if amount is not a number", async () => {
       [
         {
           id: "string",
-          slug: "string",
           name: "string",
-          color: "string",
-          size: "string",
+          color: {
+            id: "string",
+            hex: "string",
+            name: "string",
+            slug: "string",
+            product: {
+              id: "string",
+              slug: "string",
+              name: "string",
+              price: 32,
+            }
+          },
+          supplier: {
+            name: "string",
+            address: "string",
+          },
           amount: 1,
-          price: 32,
-        }
+        },
       ],
       "string",
       false
@@ -187,13 +331,25 @@ test.fails("updateAmount should fail if amount is not a number", async () => {
       [
         {
           id: "string",
-          slug: "string",
           name: "string",
-          color: "string",
-          size: "string",
+          color: {
+            id: "string",
+            hex: "string",
+            name: "string",
+            slug: "string",
+            product: {
+              id: "string",
+              slug: "string",
+              name: "string",
+              price: 32,
+            }
+          },
+          supplier: {
+            name: "string",
+            address: "string",
+          },
           amount: 1,
-          price: 32,
-        }
+        },
       ],
       "string",
       true
@@ -204,13 +360,25 @@ test.fails("updateAmount should fail if amount is not a number", async () => {
       [
         {
           id: "string",
-          slug: "string",
           name: "string",
-          color: "string",
-          size: "string",
+          color: {
+            id: "string",
+            hex: "string",
+            name: "string",
+            slug: "string",
+            product: {
+              id: "string",
+              slug: "string",
+              name: "string",
+              price: 32,
+            }
+          },
+          supplier: {
+            name: "string",
+            address: "string",
+          },
           amount: 1,
-          price: 32,
-        }
+        },
       ],
       "string",
       []
@@ -221,13 +389,25 @@ test.fails("updateAmount should fail if amount is not a number", async () => {
       [
         {
           id: "string",
-          slug: "string",
           name: "string",
-          color: "string",
-          size: "string",
+          color: {
+            id: "string",
+            hex: "string",
+            name: "string",
+            slug: "string",
+            product: {
+              id: "string",
+              slug: "string",
+              name: "string",
+              price: 32,
+            }
+          },
+          supplier: {
+            name: "string",
+            address: "string",
+          },
           amount: 1,
-          price: 32,
-        }
+        },
       ],
       "string",
       {}
@@ -241,13 +421,25 @@ test.fails("updateAmount should fail if size does not exist in cart", async () =
       [
         {
           id: "string",
-          slug: "string",
           name: "string",
-          color: "string",
-          size: "string",
+          color: {
+            id: "string",
+            hex: "string",
+            name: "string",
+            slug: "string",
+            product: {
+              id: "string",
+              slug: "string",
+              name: "string",
+              price: 32,
+            }
+          },
+          supplier: {
+            name: "string",
+            address: "string",
+          },
           amount: 1,
-          price: 32,
-        }
+        },
       ],
       "n'existe pas",
       1
@@ -261,13 +453,25 @@ test("removeFromCart works", () => {
       [
         {
           id: "string",
-          slug: "string",
           name: "string",
-          color: "string",
-          size: "string",
+          color: {
+            id: "string",
+            hex: "string",
+            name: "string",
+            slug: "string",
+            product: {
+              id: "string",
+              slug: "string",
+              name: "string",
+              price: 32,
+            }
+          },
+          supplier: {
+            name: "string",
+            address: "string",
+          },
           amount: 1,
-          price: 32,
-        }
+        },
       ],
       "string"
     )

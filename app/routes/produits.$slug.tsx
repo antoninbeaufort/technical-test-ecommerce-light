@@ -12,6 +12,8 @@ import {
   getProductBySlug,
 } from "~/models/product.server";
 import { classNames, getProductImageUrl } from "~/utils";
+import { addToCart, getCart, setCart } from "~/models/cart.server";
+import { getSize } from "~/models/size.server";
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
@@ -22,15 +24,26 @@ export const action: ActionFunction = async ({ request }) => {
   } = Object.fromEntries(formData);
   console.log(_action, sizeId);
   if (typeof sizeId !== "string") throw new Error("sizeId is not a string");
-  // const { headers } = await getOrCreateCart(request);
+  let cart = await getCart(request);
+  if (_action === "add") {
+    const size = await getSize({ id: sizeId });
+    if (!size) throw new Error("size not found");
+    cart = addToCart(cart, {
+      ...size,
+      amount: 1,
+    });
+  }
+  const cookie = await setCart(request, cart);
 
   return json(
     {
       success: true,
+    },
+    {
+      headers: {
+        "Set-Cookie": cookie,
+      },
     }
-    // {
-    //   headers,
-    // }
   );
 };
 

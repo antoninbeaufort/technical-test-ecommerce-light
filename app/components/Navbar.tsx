@@ -201,7 +201,7 @@ const navigation = {
   ],
 };
 
-export default function Navbar() {
+export default function Navbar({ cartCount }: { cartCount: number }) {
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -598,7 +598,7 @@ export default function Navbar() {
                       aria-hidden="true"
                     />
                     <span className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
-                      0
+                      {cartCount}
                     </span>
                     <span className="sr-only">
                       produits dans le panier, voir le panier
