@@ -78,6 +78,7 @@ export default function OrderConfirmation() {
                       <p>{size.color.name}</p>
                       <p>{size.name}</p>
                       <p>x{size.amount}</p>
+                      <p>Fournisseur: {size.supplier.name}</p>
                     </div>
                     <p className="flex-none font-medium text-gray-900">
                       {size.color.product.price.toLocaleString(
