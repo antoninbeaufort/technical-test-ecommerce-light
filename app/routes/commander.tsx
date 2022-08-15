@@ -276,7 +276,7 @@ export default function Checkout() {
         ) : (
           <Form
             method="post"
-            className="lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16"
+            className="cypress-checkout-form lg:grid lg:grid-cols-2 lg:gap-x-12 xl:gap-x-16"
           >
             <div>
               <div>

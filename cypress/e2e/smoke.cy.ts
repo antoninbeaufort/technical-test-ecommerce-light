@@ -2,47 +2,91 @@ import { faker } from "@faker-js/faker";
 
 describe("smoke tests", () => {
   afterEach(() => {
-    cy.cleanupUser();
+    // cy.cleanupUser();
   });
 
-  it("should allow you to register and login", () => {
-    const loginForm = {
-      email: `${faker.internet.userName()}@example.com`,
-      password: faker.internet.password(),
-    };
-    cy.then(() => ({ email: loginForm.email })).as("user");
-
+  it("should display products", () => {
     cy.visitAndCheck("/");
-    cy.findByRole("link", { name: /sign up/i }).click();
+    cy.get(".cypress-product").should("have.length", 3);
 
-    cy.findByRole("textbox", { name: /email/i }).type(loginForm.email);
-    cy.findByLabelText(/password/i).type(loginForm.password);
-    cy.findByRole("button", { name: /create account/i }).click();
+    cy.visitAndCheck("/produits/t-shirt-simple");
+    cy.visitAndCheck("/produits/t-shirt-a-motif-montagnes");
+    cy.visitAndCheck("/produits/t-shirt-a-motif-points");
+  })
 
-    cy.findByRole("link", { name: /notes/i }).click();
-    cy.findByRole("button", { name: /logout/i }).click();
-    cy.findByRole("link", { name: /log in/i });
-  });
+  it("should allow to pick color, size and quantity", () => {
+    cy.visitAndCheck("/produits/t-shirt-simple");
+    cy.findByRole("radio", { name: "Blanc" }).click();
+    cy.findByRole("radio", { name: "L" }).click();
+    // TODO: quantity
+  })
 
-  it("should allow you to make a note", () => {
-    const testNote = {
-      title: faker.lorem.words(1),
-      body: faker.lorem.sentences(1),
-    };
-    cy.login();
-    cy.visitAndCheck("/");
+  it("should allow you to add a product to cart", () => {
+    cy.visitAndCheck("/produits/t-shirt-simple");
+    cy.findByRole("button", { name: /ajouter au panier/i }).click();
+    cy.get("#cart-count").should("contain", "1");
+  })
 
-    cy.findByRole("link", { name: /notes/i }).click();
-    cy.findByText("No notes yet");
+  it("should allow you to go to checkout", () => {
+    cy.visitAndCheck("/produits/t-shirt-simple");
+    cy.findByRole("button", { name: /ajouter au panier/i }).click();
+    cy.get("[href='/panier']").click();
+    cy.findByRole("button", { name: /procéder au paiement/i }).click();
+    cy.location("pathname").should("eq", "/commander");
+  })
 
-    cy.findByRole("link", { name: /\+ new note/i }).click();
+  it("should allow you to checkout and display confirmation page", () => {
+    cy.visitAndCheck("/produits/t-shirt-simple");
+    cy.findByRole("button", { name: /ajouter au panier/i }).click();
+    cy.get("[href='/panier']").click();
+    cy.findByRole("button", { name: /procéder au paiement/i }).click();
+    cy.location("pathname").should("eq", "/commander");
+    // fill form
+    cy.get(".cypress-checkout-form").within(($form) => {
+      cy.findAllByLabelText(/^Adresse e-mail$/i).first().type(`${faker.internet.userName()}@example.com`);
+    });
+    cy.findByLabelText(/Prénom/i).type(faker.name.firstName());
+    cy.findAllByLabelText(/^Nom$/i).first().type(faker.name.lastName());
+    cy.findByLabelText(/Entreprise/i).type(faker.company.name());
+    cy.findByLabelText(/^Adresse$/i).type(faker.address.streetAddress());
+    cy.findByLabelText(/Résidence/i).type(faker.address.secondaryAddress());
+    cy.findByLabelText(/Code postal/i).type(faker.address.zipCode());
+    cy.findByLabelText(/Ville/i).type(faker.address.city());
+    cy.findByLabelText(/Téléphone/i).type(faker.phone.number());
+    cy.findByLabelText(/Numéro de carte/i).type(faker.finance.creditCardNumber());
+    cy.findAllByLabelText(/^Nom$/i).eq(1).type(faker.name.fullName());
+    cy.findByLabelText(/Date d'expiration/i).type(faker.date.future().toISOString().substring(0, 7));
+    cy.findByLabelText(/CVC/i).type(faker.finance.creditCardCVV());
 
-    cy.findByRole("textbox", { name: /title/i }).type(testNote.title);
-    cy.findByRole("textbox", { name: /body/i }).type(testNote.body);
-    cy.findByRole("button", { name: /save/i }).click();
+    cy.findByRole("button", { name: /confirmer la commande/i }).click();
+    cy.location("pathname").should("contains", "confirmation-de-commande");
+  })
 
-    cy.findByRole("button", { name: /delete/i }).click();
+  it.only("should allow you checkout and simulate an error", () => {
+    cy.visitAndCheck("/produits/t-shirt-simple");
+    cy.findByRole("button", { name: /ajouter au panier/i }).click();
+    cy.get("[href='/panier']").click();
+    cy.findByRole("button", { name: /procéder au paiement/i }).click();
+    cy.location("pathname").should("eq", "/commander");
+    // fill form
+    cy.get(".cypress-checkout-form").within(($form) => {
+      cy.findAllByLabelText(/^Adresse e-mail$/i).first().type(`${faker.internet.userName()}@example.com`);
+    });
+    cy.findByLabelText(/Prénom/i).type(faker.name.firstName());
+    cy.findAllByLabelText(/^Nom$/i).first().type(faker.name.lastName());
+    cy.findByLabelText(/Entreprise/i).type(faker.company.name());
+    cy.findByLabelText(/^Adresse$/i).type(faker.address.streetAddress());
+    cy.findByLabelText(/Résidence/i).type(faker.address.secondaryAddress());
+    cy.findByLabelText(/Code postal/i).type(faker.address.zipCode());
+    cy.findByLabelText(/Ville/i).type(faker.address.city());
+    cy.findByLabelText(/Téléphone/i).type(faker.phone.number());
+    cy.findByLabelText(/Numéro de carte/i).type(faker.finance.creditCardNumber());
+    cy.findAllByLabelText(/^Nom$/i).eq(1).type(faker.name.fullName());
+    cy.findByLabelText(/Date d'expiration/i).type(faker.date.future().toISOString().substring(0, 7));
+    cy.findByLabelText(/CVC/i).type(faker.finance.creditCardCVV());
 
-    cy.findByText("No notes yet");
-  });
+    cy.findByRole("switch", { name: /simuler une erreur/i }).click();
+    cy.findByRole("button", { name: /confirmer la commande/i }).click();
+    cy.findAllByText(/erreur/i).should("exist");
+  })
 });

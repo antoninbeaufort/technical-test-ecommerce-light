@@ -32,7 +32,7 @@ export default function Index() {
 
         <div className="mt-6 grid grid-cols-1 gap-y-10 sm:grid-cols-3 sm:gap-y-0 sm:gap-x-6 lg:gap-x-8">
           {productListItems.map((product) => (
-            <div key={product.id} className="group relative">
+            <div key={product.id} className="cypress-product group relative">
               <div className="h-96 w-full overflow-hidden rounded-lg group-hover:opacity-75 sm:aspect-w-2 sm:aspect-h-3 sm:h-auto">
                 <img
                   src={getProductImageUrl(product)}
