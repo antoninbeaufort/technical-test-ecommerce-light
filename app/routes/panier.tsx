@@ -4,16 +4,18 @@ import {
   QuestionMarkCircleIcon,
   XIcon,
 } from "@heroicons/react/solid";
-import { Form, useOutletContext } from "@remix-run/react";
+import { Form, useFetcher, useOutletContext } from "@remix-run/react";
 import type { ActionFunction } from "@remix-run/node";
 import { redirect } from "@remix-run/node";
 import type { ContextType } from "~/root";
+import { numberFormatOptions } from "~/utils";
 
 export const action: ActionFunction = () => {
   return redirect("/commander");
 };
 
 export default function Cart() {
+  const fetcher = useFetcher();
   const { cart } = useOutletContext<ContextType>();
   const cartCount = cart.reduce((acc, item) => acc + item.amount, 0);
   const subTotal = cart.reduce(
@@ -23,6 +25,13 @@ export default function Cart() {
   const shippingPrice = 5;
   const total = subTotal + shippingPrice;
   const TVA = total * 0.2;
+
+  function handleChange(event: React.ChangeEvent<HTMLSelectElement>) {
+    fetcher.submit(
+      event.currentTarget.parentElement?.parentElement as HTMLFormElement,
+      { replace: true }
+    );
+  }
 
   return (
     <div className="bg-white">
@@ -53,8 +62,14 @@ export default function Cart() {
                   </div>
 
                   <div className="ml-4 flex flex-1 flex-col justify-between sm:ml-6">
-                    <div className="relative pr-9 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:pr-0">
+                    <fetcher.Form
+                      replace
+                      method="post"
+                      action={"/produits/" + size.color.product.slug}
+                      className="relative pr-9 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:pr-0"
+                    >
                       <div>
+                        <input type="hidden" name="sizeId" value={size.id} />
                         <div className="flex justify-between">
                           <h3 className="text-sm">
                             <a
@@ -72,7 +87,10 @@ export default function Cart() {
                           </p>
                         </div>
                         <p className="mt-1 text-sm font-medium text-gray-900">
-                          {size.color.product.price} €
+                          {size.color.product.price.toLocaleString(
+                            "fr-FR",
+                            numberFormatOptions
+                          )}
                         </p>
                       </div>
 
@@ -85,9 +103,10 @@ export default function Cart() {
                         </label>
                         <select
                           id={`quantity-${sizeIdx}`}
-                          name={`quantity-${sizeIdx}`}
+                          name="quantity"
                           className="max-w-full rounded-md border border-gray-300 py-1.5 text-left text-base font-medium leading-5 text-gray-700 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 sm:text-sm"
                           defaultValue={size.amount}
+                          onChange={handleChange}
                         >
                           <option value={1}>1</option>
                           <option value={2}>2</option>
@@ -101,7 +120,9 @@ export default function Cart() {
 
                         <div className="absolute top-0 right-0">
                           <button
-                            type="button"
+                            type="submit"
+                            name="_action"
+                            value="remove"
                             className="-m-2 inline-flex p-2 text-gray-400 hover:text-gray-500"
                           >
                             <span className="sr-only">Supprimer</span>
@@ -109,7 +130,7 @@ export default function Cart() {
                           </button>
                         </div>
                       </div>
-                    </div>
+                    </fetcher.Form>
 
                     <p className="mt-4 flex space-x-2 text-sm text-gray-700">
                       {size.amount > 0 ? (
@@ -150,7 +171,7 @@ export default function Cart() {
               <div className="flex items-center justify-between">
                 <dt className="text-sm text-gray-600">Sous-total</dt>
                 <dd className="text-sm font-medium text-gray-900">
-                  {subTotal.toLocaleString("fr-FR")} €
+                  {subTotal.toLocaleString("fr-FR", numberFormatOptions)}
                 </dd>
               </div>
               <div className="flex items-center justify-between border-t border-gray-200 pt-4">
@@ -171,7 +192,7 @@ export default function Cart() {
                   </a>
                 </dt>
                 <dd className="text-sm font-medium text-gray-900">
-                  {shippingPrice.toLocaleString("fr-FR")} €
+                  {shippingPrice.toLocaleString("fr-FR", numberFormatOptions)}
                 </dd>
               </div>
               <div className="flex items-center justify-between border-t border-gray-200 pt-4">
@@ -191,7 +212,7 @@ export default function Cart() {
                   </a>
                 </dt>
                 <dd className="text-sm font-medium text-gray-900">
-                  {TVA.toLocaleString("fr-FR")} €
+                  {TVA.toLocaleString("fr-FR", numberFormatOptions)}
                 </dd>
               </div>
               <div className="flex items-center justify-between border-t border-gray-200 pt-4">
@@ -199,7 +220,7 @@ export default function Cart() {
                   Total de la commande
                 </dt>
                 <dd className="text-base font-medium text-gray-900">
-                  {total.toLocaleString("fr-FR")} €
+                  {total.toLocaleString("fr-FR", numberFormatOptions)}
                 </dd>
               </div>
             </dl>

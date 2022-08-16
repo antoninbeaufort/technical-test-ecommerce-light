@@ -11,7 +11,7 @@ import {
   getOtherProductListItems,
   getProductBySlug,
 } from "~/models/product.server";
-import { classNames, getProductImageUrl } from "~/utils";
+import { classNames, getProductImageUrl, numberFormatOptions } from "~/utils";
 import {
   addToCart,
   getCart,
@@ -156,7 +156,7 @@ export default function Product() {
                 {product.name}
               </h1>
               <p className="text-xl font-medium text-gray-900">
-                {product.price} €
+                {product.price.toLocaleString("fr-FR", numberFormatOptions)}
               </p>
             </div>
             {/* Reviews */}
