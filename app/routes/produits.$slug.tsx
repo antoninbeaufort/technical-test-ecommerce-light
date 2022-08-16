@@ -1,6 +1,6 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/node";
-import { useFetcher, useLoaderData } from "@remix-run/react";
+import { useLoaderData } from "@remix-run/react";
 import invariant from "tiny-invariant";
 import { useEffect, useState } from "react";
 import { RadioGroup } from "@headlessui/react";
@@ -12,25 +12,39 @@ import {
   getProductBySlug,
 } from "~/models/product.server";
 import { classNames, getProductImageUrl } from "~/utils";
-import { addToCart, getCart, setCart } from "~/models/cart.server";
+import {
+  addToCart,
+  getCart,
+  removeFromCart,
+  setCart,
+  updateAmount,
+} from "~/models/cart.server";
 import { getSize } from "~/models/size.server";
+import ProductQuantity from "~/components/ProductQuantity";
 
 export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
   const {
     _action,
     sizeId,
-    // quantity: rawQuantity,
+    quantity: rawQuantity,
   } = Object.fromEntries(formData);
   if (typeof sizeId !== "string") throw new Error("sizeId is not a string");
   let cart = await getCart(request);
-  if (_action === "add") {
+  if (_action === "remove") {
+    cart = removeFromCart(cart, sizeId);
+  } else if (_action === "add") {
     const size = await getSize({ id: sizeId });
     if (!size) throw new Error("size not found");
     cart = addToCart(cart, {
       ...size,
       amount: 1,
     });
+  } else {
+    if (typeof rawQuantity !== "string")
+      throw new Error("rawQuantity is not a string");
+    const quantity = parseInt(rawQuantity, 10);
+    cart = updateAmount(cart, sizeId, quantity);
   }
   const cookie = await setCart(request, cart);
 
@@ -104,7 +118,6 @@ const reviews = {
 };
 
 export default function Product() {
-  const fetcher = useFetcher();
   const { otherProductListItems, product } = useLoaderData() as LoaderData;
   const getColorById = (id: string) => {
     return product.colors.find((color) => color.id === id) as NonNullable<
@@ -131,7 +144,7 @@ export default function Product() {
         .find((color) => color.id === selectedColor)
         ?.sizes.find((size) => !!size.amount)?.id
     );
-  }, [selectedColor, product.colors]);
+  }, [selectedColor /*, product.colors*/]); // TODO: this is needed to prevent size swap on add to cart
 
   return (
     <div className="bg-white">
@@ -201,7 +214,7 @@ export default function Product() {
           </div>
 
           <div className="mt-8 lg:col-span-5">
-            <fetcher.Form replace method="post">
+            <div>
               {/* Color picker */}
               <div>
                 <h2 className="text-sm font-medium text-gray-900">Couleur</h2>
@@ -257,7 +270,6 @@ export default function Product() {
                 </div>
 
                 <RadioGroup
-                  name="sizeId"
                   value={selectedSize}
                   onChange={setSelectedSize}
                   className="mt-2"
@@ -294,15 +306,8 @@ export default function Product() {
                   </div>
                 </RadioGroup>
               </div>
-              <button
-                type="submit"
-                name="_action"
-                value="add"
-                className="mt-8 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 py-3 px-8 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-              >
-                Ajouter au panier
-              </button>
-            </fetcher.Form>
+              <ProductQuantity id={selectedSize} />
+            </div>
 
             {/* Product details */}
             <div className="mt-10">
