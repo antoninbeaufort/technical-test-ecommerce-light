@@ -13,10 +13,12 @@ des différents enchainements et avoir une base d’échanges pour l’entretien
 
 `Architecture :`
 **Deux dépôts github :**
+
 - un pour la partie ecommerce front
 - un pour la partie api back
 
 **Fonctionnalités :**
+
 - [x] Afficher les produits
 - [x] Pouvoir choisir la taille, la couleur et la quantité
 - [x] Ajouter un article au panier
@@ -27,6 +29,7 @@ des différents enchainements et avoir une base d’échanges pour l’entretien
 - [x] Si la commande est refusée, on affiche un message d'erreur dans le checkout.
 
 **Idée en plus par Antonin :**
+
 - [x] Panier / page produit
   - [x] Modifier la quantité
   - [x] Retirer du panier
@@ -34,11 +37,9 @@ des différents enchainements et avoir une base d’échanges pour l’entretien
 - [x] Validation des champs de carte bancaire
 - [x] Affichage des erreurs de validation
 
-```
-
-
 `Idées modèles de données :`
 **Produit :**
+
 - couleurs
 - tailles
 - nom
@@ -47,7 +48,6 @@ des différents enchainements et avoir une base d’échanges pour l’entretien
 
 `Pro Tips :`
 Tu peux simuler tous les traitements que tu juges nécéssaire ( pour gagner du temps )
-( *ex : pas de vrai module de paiement , pas de db mais des retours de données en dur* )
+( _ex : pas de vrai module de paiement , pas de db mais des retours de données en dur_ )
 
-En d’autres mots ne te fais pas de soucis si ton app ne se lance pas correctement ou si
-tu as des bugs 😊
+En d’autres mots ne te fais pas de soucis si ton app ne se lance pas correctement ou si tu as des bugs 😊

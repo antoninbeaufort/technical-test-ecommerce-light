@@ -11,7 +11,7 @@ const getAmountByIndex = (index) => {
   if (index === 2 || index === 3) return 9;
   if (index === 5) return 0;
   return getRandomArbitrary(0, 20);
-}
+};
 
 async function seed() {
   const firstSupplier = await prisma.supplier.create({
@@ -20,7 +20,7 @@ async function seed() {
       email: "supplier-1@example.com",
       phone: "0000000000",
       address: "1 Avenue de la République, 75011 Paris",
-    }
+    },
   });
 
   const secondSupplier = await prisma.supplier.create({
@@ -29,7 +29,7 @@ async function seed() {
       email: "supplier-2@example.com",
       phone: "0000000000",
       address: "2 Avenue de la République, 75011 Paris",
-    }
+    },
   });
 
   await prisma.product.create({
@@ -37,7 +37,8 @@ async function seed() {
       slug: "t-shirt-simple",
       name: "T-shirt simple",
       order: 1,
-      description: "Le tee-shirt simple est une nouvelle version honnête d'un classique. Ce tee-shirt est en coton super doux et pré-rétréci pour un vrai confort et une coupe fiable. Ils sont coupés et cousus à la main localement, avec une technique de teinture spéciale qui donne à chaque t-shirt son propre aspect.",
+      description:
+        "Le tee-shirt simple est une nouvelle version honnête d'un classique. Ce tee-shirt est en coton super doux et pré-rétréci pour un vrai confort et une coupe fiable. Ils sont coupés et cousus à la main localement, avec une technique de teinture spéciale qui donne à chaque t-shirt son propre aspect.",
       price: 32,
       colors: {
         create: [
@@ -53,11 +54,11 @@ async function seed() {
                 amount: getAmountByIndex(index),
                 supplier: {
                   connect: {
-                    id: firstSupplier.id
-                  }
-                }
-              }))
-            }
+                    id: firstSupplier.id,
+                  },
+                },
+              })),
+            },
           },
           {
             hex: "#ffffff",
@@ -71,15 +72,15 @@ async function seed() {
                 amount: getAmountByIndex(index),
                 supplier: {
                   connect: {
-                    id: firstSupplier.id
-                  }
-                }
-              }))
-            }
-          }
-        ]
-      }
-    }
+                    id: firstSupplier.id,
+                  },
+                },
+              })),
+            },
+          },
+        ],
+      },
+    },
   });
 
   await prisma.product.create({
@@ -87,7 +88,8 @@ async function seed() {
       slug: "t-shirt-a-motif-montagnes",
       name: "T-shirt à motif montagnes",
       order: 2,
-      description: "Le tee-shirt à motif montagnes est une nouvelle version honnête d'un classique. Ce tee-shirt est en coton super doux et pré-rétréci pour un vrai confort et une coupe fiable. Ils sont coupés et cousus à la main localement, avec une technique de teinture spéciale qui donne à chaque t-shirt son propre aspect.",
+      description:
+        "Le tee-shirt à motif montagnes est une nouvelle version honnête d'un classique. Ce tee-shirt est en coton super doux et pré-rétréci pour un vrai confort et une coupe fiable. Ils sont coupés et cousus à la main localement, avec une technique de teinture spéciale qui donne à chaque t-shirt son propre aspect.",
       price: 36,
       colors: {
         create: [
@@ -102,15 +104,15 @@ async function seed() {
                 amount: getAmountByIndex(index),
                 supplier: {
                   connect: {
-                    id: secondSupplier.id
-                  }
-                }
-              }))
-            }
+                    id: secondSupplier.id,
+                  },
+                },
+              })),
+            },
           },
-        ]
-      }
-    }
+        ],
+      },
+    },
   });
 
   await prisma.product.create({
@@ -118,7 +120,8 @@ async function seed() {
       slug: "t-shirt-a-motif-points",
       name: "T-shirt à motif points",
       order: 3,
-      description: "Le tee-shirt à motif points est une nouvelle version honnête d'un classique. Ce tee-shirt est en coton super doux et pré-rétréci pour un vrai confort et une coupe fiable. Ils sont coupés et cousus à la main localement, avec une technique de teinture spéciale qui donne à chaque t-shirt son propre aspect.",
+      description:
+        "Le tee-shirt à motif points est une nouvelle version honnête d'un classique. Ce tee-shirt est en coton super doux et pré-rétréci pour un vrai confort et une coupe fiable. Ils sont coupés et cousus à la main localement, avec une technique de teinture spéciale qui donne à chaque t-shirt son propre aspect.",
       price: 36,
       colors: {
         create: [
@@ -133,18 +136,16 @@ async function seed() {
                 amount: getAmountByIndex(index),
                 supplier: {
                   connect: {
-                    id: firstSupplier.id
-                  }
-                }
-              }))
-            }
+                    id: firstSupplier.id,
+                  },
+                },
+              })),
+            },
           },
-        ]
-      }
-    }
+        ],
+      },
+    },
   });
-
-
 
   console.log(`Database has been seeded. 🌱`);
 }

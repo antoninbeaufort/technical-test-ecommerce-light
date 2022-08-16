@@ -23,7 +23,8 @@ export async function getCartSession(request: Request) {
   return {
     getCart: (): Cart => session.get(CART_SESSION_KEY) ?? [],
     setCart: (cart: Cart) => session.set(CART_SESSION_KEY, cart),
-    commit: () => sessionStorage.commitSession(session, { expires: new Date(2099, 1, 1) }),
+    commit: () =>
+      sessionStorage.commitSession(session, { expires: new Date(2099, 1, 1) }),
   };
 }
 

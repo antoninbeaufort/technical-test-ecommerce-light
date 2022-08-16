@@ -1,5 +1,5 @@
 // polyfill needed until Node 17
-import structuredClone from '@ungap/structured-clone';
+import structuredClone from "@ungap/structured-clone";
 import type { Size, Color, Product, Supplier } from "@prisma/client";
 import { getCartSession } from "~/session.server";
 
@@ -24,18 +24,23 @@ export function addToCart(cart: Cart, cartItem: Cart[number]): Cart {
   return cartCopy;
 }
 
-export function updateAmount(cart: Cart, id: Cart[number]["id"], amount: number): Cart {
+export function updateAmount(
+  cart: Cart,
+  id: Cart[number]["id"],
+  amount: number
+): Cart {
   if (typeof amount !== "number") throw new Error("amount must be a number");
   const cartCopy = structuredClone(cart);
-  const item = cartCopy.find(item => item.id === id);
-  if (!item) throw new Error("Item not found in cart in order to update amount");
+  const item = cartCopy.find((item) => item.id === id);
+  if (!item)
+    throw new Error("Item not found in cart in order to update amount");
   item.amount = amount;
   return cartCopy;
 }
 
 export function removeFromCart(cart: Cart, id: Cart[number]["id"]): Cart {
   const cartCopy = structuredClone(cart);
-  const itemIndex = cartCopy.findIndex(item => item.id === id);
+  const itemIndex = cartCopy.findIndex((item) => item.id === id);
   if (itemIndex !== -1) {
     cartCopy.splice(itemIndex, 1);
   }

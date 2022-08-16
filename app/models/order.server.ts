@@ -4,9 +4,7 @@ import { prisma } from "~/db.server";
 
 export type { Order } from "@prisma/client";
 
-export function getOrder({
-  id,
-}: Pick<Order, "id">) {
+export function getOrder({ id }: Pick<Order, "id">) {
   return prisma.order.findFirst({
     select: {
       id: true,
@@ -32,7 +30,19 @@ export function getOrder({
   });
 }
 
-export function createOrder(order: (Prisma.Without<Prisma.OrderCreateInput, Prisma.OrderUncheckedCreateInput> & Prisma.OrderUncheckedCreateInput) | (Prisma.Without<Prisma.OrderUncheckedCreateInput, Prisma.OrderCreateInput> & Prisma.OrderCreateInput)) {
+export function createOrder(
+  order:
+    | (Prisma.Without<
+        Prisma.OrderCreateInput,
+        Prisma.OrderUncheckedCreateInput
+      > &
+        Prisma.OrderUncheckedCreateInput)
+    | (Prisma.Without<
+        Prisma.OrderUncheckedCreateInput,
+        Prisma.OrderCreateInput
+      > &
+        Prisma.OrderCreateInput)
+) {
   return prisma.order.create({
     data: order,
   });

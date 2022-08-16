@@ -19,5 +19,5 @@ module.exports = {
   rules: {
     "jsx-a11y/no-redundant-roles": "off",
     "jsx-a11y/anchor-is-valid": "off",
-  }
+  },
 };

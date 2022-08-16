@@ -1,4 +1,4 @@
-import 'dotenv/config'
+import "dotenv/config";
 import {
   addToCart,
   getCart,
@@ -8,11 +8,11 @@ import {
 } from "./cart.server";
 
 test("getCart return an empty cart without session", async () => {
-  expect(await getCart(new Request('http://localhost:3000'))).toEqual([]);
-})
+  expect(await getCart(new Request("http://localhost:3000"))).toEqual([]);
+});
 
 test("getCart & setCart work", async () => {
-  const cookie = await setCart(new Request('http://localhost:3000'), [
+  const cookie = await setCart(new Request("http://localhost:3000"), [
     {
       id: "string",
       name: "string",
@@ -26,7 +26,7 @@ test("getCart & setCart work", async () => {
           slug: "string",
           name: "string",
           price: 32,
-        }
+        },
       },
       supplier: {
         name: "string",
@@ -36,11 +36,15 @@ test("getCart & setCart work", async () => {
     },
   ]);
 
-  expect(await getCart(new Request('http://localhost:3000', {
-    headers: {
-      Cookie: cookie,
-    }
-  }))).toEqual([
+  expect(
+    await getCart(
+      new Request("http://localhost:3000", {
+        headers: {
+          Cookie: cookie,
+        },
+      })
+    )
+  ).toEqual([
     {
       id: "string",
       name: "string",
@@ -54,7 +58,7 @@ test("getCart & setCart work", async () => {
           slug: "string",
           name: "string",
           price: 32,
-        }
+        },
       },
       supplier: {
         name: "string",
@@ -63,59 +67,54 @@ test("getCart & setCart work", async () => {
       amount: 1,
     },
   ]);
-})
+});
 
 test("addToCart return the cart with the new item", () => {
   expect(
-    addToCart(
-      [],
-      {
+    addToCart([], {
+      id: "string",
+      name: "string",
+      color: {
         id: "string",
+        hex: "string",
         name: "string",
-        color: {
+        slug: "string",
+        product: {
           id: "string",
-          hex: "string",
-          name: "string",
           slug: "string",
-          product: {
-            id: "string",
-            slug: "string",
-            name: "string",
-            price: 32,
-          }
-        },
-        supplier: {
           name: "string",
-          address: "string",
+          price: 32,
         },
-        amount: 1,
       },
-    )
-  ).toEqual(
-    [
-      {
+      supplier: {
+        name: "string",
+        address: "string",
+      },
+      amount: 1,
+    })
+  ).toEqual([
+    {
+      id: "string",
+      name: "string",
+      color: {
         id: "string",
+        hex: "string",
         name: "string",
-        color: {
+        slug: "string",
+        product: {
           id: "string",
-          hex: "string",
-          name: "string",
           slug: "string",
-          product: {
-            id: "string",
-            slug: "string",
-            name: "string",
-            price: 32,
-          }
-        },
-        supplier: {
           name: "string",
-          address: "string",
+          price: 32,
         },
-        amount: 1,
       },
-    ]
-  );
+      supplier: {
+        name: "string",
+        address: "string",
+      },
+      amount: 1,
+    },
+  ]);
   expect(
     addToCart(
       [
@@ -132,14 +131,14 @@ test("addToCart return the cart with the new item", () => {
               slug: "existingString",
               name: "existingString",
               price: 80,
-            }
+            },
           },
           supplier: {
             name: "existingString",
             address: "existingString",
           },
           amount: 8,
-        }
+        },
       ],
       {
         id: "string",
@@ -154,62 +153,60 @@ test("addToCart return the cart with the new item", () => {
             slug: "string",
             name: "string",
             price: 32,
-          }
+          },
         },
         supplier: {
           name: "string",
           address: "string",
         },
         amount: 1,
-      },
+      }
     )
-  ).toEqual(
-    [
-      {
+  ).toEqual([
+    {
+      id: "existingString",
+      name: "existingString",
+      color: {
         id: "existingString",
+        hex: "existingString",
         name: "existingString",
-        color: {
+        slug: "existingString",
+        product: {
           id: "existingString",
-          hex: "existingString",
-          name: "existingString",
           slug: "existingString",
-          product: {
-            id: "existingString",
-            slug: "existingString",
-            name: "existingString",
-            price: 80,
-          }
-        },
-        supplier: {
           name: "existingString",
-          address: "existingString",
+          price: 80,
         },
-        amount: 8,
       },
-      {
+      supplier: {
+        name: "existingString",
+        address: "existingString",
+      },
+      amount: 8,
+    },
+    {
+      id: "string",
+      name: "string",
+      color: {
         id: "string",
+        hex: "string",
         name: "string",
-        color: {
+        slug: "string",
+        product: {
           id: "string",
-          hex: "string",
-          name: "string",
           slug: "string",
-          product: {
-            id: "string",
-            slug: "string",
-            name: "string",
-            price: 32,
-          }
-        },
-        supplier: {
           name: "string",
-          address: "string",
+          price: 32,
         },
-        amount: 1,
       },
-    ]
-  );
-})
+      supplier: {
+        name: "string",
+        address: "string",
+      },
+      amount: 1,
+    },
+  ]);
+});
 
 test("updateAmount works", () => {
   expect(
@@ -228,7 +225,7 @@ test("updateAmount works", () => {
               slug: "string",
               name: "string",
               price: 32,
-            }
+            },
           },
           supplier: {
             name: "string",
@@ -240,32 +237,30 @@ test("updateAmount works", () => {
       "string",
       2
     )
-  ).toEqual(
-    [
-      {
+  ).toEqual([
+    {
+      id: "string",
+      name: "string",
+      color: {
         id: "string",
+        hex: "string",
         name: "string",
-        color: {
+        slug: "string",
+        product: {
           id: "string",
-          hex: "string",
-          name: "string",
           slug: "string",
-          product: {
-            id: "string",
-            slug: "string",
-            name: "string",
-            price: 32,
-          }
-        },
-        supplier: {
           name: "string",
-          address: "string",
+          price: 32,
         },
-        amount: 2,
       },
-    ]
-  );
-})
+      supplier: {
+        name: "string",
+        address: "string",
+      },
+      amount: 2,
+    },
+  ]);
+});
 
 test.fails("updateAmount should fail if amount is not a number", async () => {
   await expect(
@@ -284,7 +279,7 @@ test.fails("updateAmount should fail if amount is not a number", async () => {
               slug: "string",
               name: "string",
               price: 32,
-            }
+            },
           },
           supplier: {
             name: "string",
@@ -314,7 +309,7 @@ test.fails("updateAmount should fail if amount is not a number", async () => {
               slug: "string",
               name: "string",
               price: 32,
-            }
+            },
           },
           supplier: {
             name: "string",
@@ -344,7 +339,7 @@ test.fails("updateAmount should fail if amount is not a number", async () => {
               slug: "string",
               name: "string",
               price: 32,
-            }
+            },
           },
           supplier: {
             name: "string",
@@ -374,7 +369,7 @@ test.fails("updateAmount should fail if amount is not a number", async () => {
               slug: "string",
               name: "string",
               price: 32,
-            }
+            },
           },
           supplier: {
             name: "string",
@@ -404,7 +399,7 @@ test.fails("updateAmount should fail if amount is not a number", async () => {
               slug: "string",
               name: "string",
               price: 32,
-            }
+            },
           },
           supplier: {
             name: "string",
@@ -418,39 +413,42 @@ test.fails("updateAmount should fail if amount is not a number", async () => {
       {}
     )
   ).rejects.toBe(1);
-})
+});
 
-test.fails("updateAmount should fail if size does not exist in cart", async () => {
-  await expect(
-    updateAmount(
-      [
-        {
-          id: "string",
-          name: "string",
-          color: {
+test.fails(
+  "updateAmount should fail if size does not exist in cart",
+  async () => {
+    await expect(
+      updateAmount(
+        [
+          {
             id: "string",
-            hex: "string",
             name: "string",
-            slug: "string",
-            product: {
+            color: {
               id: "string",
-              slug: "string",
+              hex: "string",
               name: "string",
-              price: 32,
-            }
+              slug: "string",
+              product: {
+                id: "string",
+                slug: "string",
+                name: "string",
+                price: 32,
+              },
+            },
+            supplier: {
+              name: "string",
+              address: "string",
+            },
+            amount: 1,
           },
-          supplier: {
-            name: "string",
-            address: "string",
-          },
-          amount: 1,
-        },
-      ],
-      "n'existe pas",
-      1
-    )
-  ).rejects.toBe(1);
-})
+        ],
+        "n'existe pas",
+        1
+      )
+    ).rejects.toBe(1);
+  }
+);
 
 test("removeFromCart works", () => {
   expect(
@@ -469,7 +467,7 @@ test("removeFromCart works", () => {
               slug: "string",
               name: "string",
               price: 32,
-            }
+            },
           },
           supplier: {
             name: "string",
@@ -481,7 +479,7 @@ test("removeFromCart works", () => {
       "string"
     )
   ).toEqual([]);
-})
+});
 
 // test("addToCart, updateAmount, getCart work", async () => {
 //   let cookie = await addToCart(new Request('http://localhost:3000'), {

@@ -4,9 +4,7 @@ import { prisma } from "~/db.server";
 
 export type { Product } from "@prisma/client";
 
-export function getProductBySlug({
-  slug,
-}: Pick<Product, "slug">) {
+export function getProductBySlug({ slug }: Pick<Product, "slug">) {
   return prisma.product.findFirst({
     select: {
       id: true,
@@ -27,10 +25,10 @@ export function getProductBySlug({
               amount: true,
             },
             orderBy: { order: "asc" },
-          }
+          },
         },
         orderBy: { order: "asc" },
-      }
+      },
     },
     where: { slug },
   });
@@ -51,15 +49,13 @@ export function getProductListItems() {
           slug: true,
         },
         orderBy: { order: "asc" },
-      }
+      },
     },
     orderBy: { order: "asc" },
   });
 }
 
-export function getOtherProductListItems({
-  slug
-}: Pick<Product, "slug">) {
+export function getOtherProductListItems({ slug }: Pick<Product, "slug">) {
   return prisma.product.findMany({
     select: {
       id: true,
@@ -74,13 +70,13 @@ export function getOtherProductListItems({
           slug: true,
         },
         orderBy: { order: "asc" },
-      }
+      },
     },
     orderBy: { order: "asc" },
     where: {
       NOT: {
         slug,
-      }
-    }
+      },
+    },
   });
 }

@@ -1,6 +1,9 @@
 import { useMatches } from "@remix-run/react";
 import { useMemo } from "react";
-import type { getProductBySlug, getProductListItems } from "./models/product.server";
+import type {
+  getProductBySlug,
+  getProductListItems,
+} from "./models/product.server";
 
 const DEFAULT_REDIRECT = "/";
 
@@ -48,10 +51,16 @@ export function validateEmail(email: unknown): email is string {
 }
 
 export function validateCardNumber(cardNumber: unknown): cardNumber is string {
-  return typeof cardNumber === "string" && cardNumber.length > 9 && cardNumber.length < 20;
+  return (
+    typeof cardNumber === "string" &&
+    cardNumber.length > 9 &&
+    cardNumber.length < 20
+  );
 }
 
-export function validateCardExpiration(cardExpiration: unknown): cardExpiration is string {
+export function validateCardExpiration(
+  cardExpiration: unknown
+): cardExpiration is string {
   if (!(typeof cardExpiration === "string")) return false;
   const matchs = cardExpiration.match(/(?<month>[0-9]{2})\/(?<year>[0-9]{2})/);
   if (!matchs) return false;
@@ -65,7 +74,7 @@ export function validateCardExpiration(cardExpiration: unknown): cardExpiration 
   if (year === currentYear) {
     const currentMonth = Number(new Date().getMonth() + 1);
     if (month < currentMonth) return false;
-  };
+  }
   return true;
 }
 
@@ -78,7 +87,9 @@ export function classNames(...classes: string[]) {
 }
 
 export const getProductImageUrl = (
-  product: Awaited<ReturnType<typeof getProductListItems>>[number] | NonNullable<Awaited<ReturnType<typeof getProductBySlug>>>,
+  product:
+    | Awaited<ReturnType<typeof getProductListItems>>[number]
+    | NonNullable<Awaited<ReturnType<typeof getProductBySlug>>>,
   index = 0
 ) => {
   const slug = product.colors[index].slug ?? product.slug;

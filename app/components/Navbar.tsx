@@ -597,7 +597,10 @@ export default function Navbar({ cartCount }: { cartCount: number }) {
                       className="h-6 w-6 flex-shrink-0 text-gray-400 group-hover:text-gray-500"
                       aria-hidden="true"
                     />
-                    <span id="cart-count" className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800">
+                    <span
+                      id="cart-count"
+                      className="ml-2 text-sm font-medium text-gray-700 group-hover:text-gray-800"
+                    >
                       {cartCount}
                     </span>
                     <span className="sr-only">

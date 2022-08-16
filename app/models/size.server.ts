@@ -4,9 +4,7 @@ import { prisma } from "~/db.server";
 
 export type { Size } from "@prisma/client";
 
-export function getSize({
-  id,
-}: Pick<Size, "id">) {
+export function getSize({ id }: Pick<Size, "id">) {
   return prisma.size.findFirst({
     select: {
       id: true,
@@ -25,15 +23,15 @@ export function getSize({
               name: true,
               price: true,
             },
-          }
+          },
         },
       },
       supplier: {
         select: {
           name: true,
           address: true,
-        }
-      }
+        },
+      },
     },
     where: { id },
   });
