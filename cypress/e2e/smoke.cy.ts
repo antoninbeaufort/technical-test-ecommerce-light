@@ -18,7 +18,9 @@ describe("smoke tests", () => {
     cy.visitAndCheck("/produits/t-shirt-simple");
     cy.findByRole("radio", { name: "Blanc" }).click();
     cy.findByRole("radio", { name: "L" }).click();
-    // TODO: quantity
+    cy.findByRole("button", { name: /ajouter au panier/i }).click();
+    cy.findByLabelText(/quantité/i).select("3");
+    cy.get("#cart-count").should("contain", "3");
   })
 
   it("should allow you to add a product to cart", () => {
@@ -53,9 +55,12 @@ describe("smoke tests", () => {
     cy.findByLabelText(/Code postal/i).type(faker.address.zipCode());
     cy.findByLabelText(/Ville/i).type(faker.address.city());
     cy.findByLabelText(/Téléphone/i).type(faker.phone.number());
-    cy.findByLabelText(/Numéro de carte/i).type(faker.finance.creditCardNumber());
+    cy.findByLabelText(/Numéro de carte/i).type(faker.random.numeric(faker.datatype.number({
+      min: 10,
+      max: 19
+    })));
     cy.findAllByLabelText(/^Nom$/i).eq(1).type(faker.name.fullName());
-    cy.findByLabelText(/Date d'expiration/i).type(faker.date.future().toISOString().substring(0, 7));
+    cy.findByLabelText(/Date d'expiration/i).type(faker.date.future().toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit' }).slice(-5));
     cy.findByLabelText(/CVC/i).type(faker.finance.creditCardCVV());
 
     cy.findByRole("button", { name: /confirmer la commande/i }).click();
@@ -80,9 +85,12 @@ describe("smoke tests", () => {
     cy.findByLabelText(/Code postal/i).type(faker.address.zipCode());
     cy.findByLabelText(/Ville/i).type(faker.address.city());
     cy.findByLabelText(/Téléphone/i).type(faker.phone.number());
-    cy.findByLabelText(/Numéro de carte/i).type(faker.finance.creditCardNumber());
+    cy.findByLabelText(/Numéro de carte/i).type(faker.random.numeric(faker.datatype.number({
+      min: 10,
+      max: 19
+    })));
     cy.findAllByLabelText(/^Nom$/i).eq(1).type(faker.name.fullName());
-    cy.findByLabelText(/Date d'expiration/i).type(faker.date.future().toISOString().substring(0, 7));
+    cy.findByLabelText(/Date d'expiration/i).type(faker.date.future().toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit' }).slice(-5));
     cy.findByLabelText(/CVC/i).type(faker.finance.creditCardCVV());
 
     cy.findByRole("switch", { name: /simuler une erreur/i }).click();
