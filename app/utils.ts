@@ -59,7 +59,7 @@ export function validateCardExpiration(cardExpiration: unknown): cardExpiration 
   if (!matchs.groups.month || !matchs.groups.year) return false;
   const month = parseInt(matchs.groups.month, 10);
   const year = parseInt(matchs.groups.year, 10);
-  if (!(month < 0 && month > 12 && year < 0 && year > 99)) return false;
+  if (month < 0 || month > 12 || year < 0 || year > 99) return false;
   const currentYear = Number(new Date().getFullYear().toString().slice(-2));
   if (year < currentYear) return false;
   if (year === currentYear) {
