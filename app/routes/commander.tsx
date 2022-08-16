@@ -2,11 +2,7 @@ import type { ActionFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { useState } from "react";
 import { RadioGroup, Switch } from "@headlessui/react";
-import {
-  CheckCircleIcon,
-  TrashIcon,
-  XCircleIcon,
-} from "@heroicons/react/solid";
+import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/solid";
 import {
   Form,
   Link,

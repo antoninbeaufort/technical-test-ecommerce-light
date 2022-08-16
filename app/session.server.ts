@@ -1,4 +1,4 @@
-import { createCookieSessionStorage, redirect } from "@remix-run/node";
+import { createCookieSessionStorage } from "@remix-run/node";
 import invariant from "tiny-invariant";
 import type { Cart } from "~/models/cart.server";
 
