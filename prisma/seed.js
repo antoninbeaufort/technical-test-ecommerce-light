@@ -7,6 +7,12 @@ function getRandomArbitrary(min, max) {
 
 const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
 
+const getAmountByIndex = (index) => {
+  if (index === 2 || index === 3) return 9;
+  if (index === 5) return 0;
+  return getRandomArbitrary(0, 20);
+}
+
 async function seed() {
   const firstSupplier = await prisma.supplier.create({
     data: {
@@ -44,7 +50,7 @@ async function seed() {
               create: sizes.map((size, index) => ({
                 name: size,
                 order: index + 1,
-                amount: getRandomArbitrary(0, 20),
+                amount: getAmountByIndex(index),
                 supplier: {
                   connect: {
                     id: firstSupplier.id
@@ -62,7 +68,7 @@ async function seed() {
               create: sizes.map((size, index) => ({
                 name: size,
                 order: index + 1,
-                amount: getRandomArbitrary(0, 20),
+                amount: getAmountByIndex(index),
                 supplier: {
                   connect: {
                     id: firstSupplier.id
@@ -93,7 +99,7 @@ async function seed() {
               create: sizes.map((size, index) => ({
                 name: size,
                 order: index + 1,
-                amount: getRandomArbitrary(0, 20),
+                amount: getAmountByIndex(index),
                 supplier: {
                   connect: {
                     id: secondSupplier.id
@@ -124,7 +130,7 @@ async function seed() {
               create: sizes.map((size, index) => ({
                 name: size,
                 order: index + 1,
-                amount: getRandomArbitrary(0, 20),
+                amount: getAmountByIndex(index),
                 supplier: {
                   connect: {
                     id: firstSupplier.id
