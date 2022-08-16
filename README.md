@@ -2,7 +2,7 @@
 
 This repository is a technical challenge for a job interview to create a light ecommerce site between 11/08/2022 and 19/08/2022.
 
-## Requirements 
+## Requirements
 
 - Node 16
 - Docker
@@ -34,3 +34,21 @@ This repository is a technical challenge for a job interview to create a light e
   ```sh
   npm run dev
   ```
+
+- Unit tests:
+  ```sh
+  npm run test
+  ```
+- e2e tests:
+  ```sh
+  npm run test:e2e:run
+  ```
+
+## Technical choices explanation
+
+**Remix**:
+
+- Maintability, monorepo for both frontend and backend
+- Type safety across frontend and backend
+- SSR with hydration, good for SEO and dynamism/UX
+- Auto cancel successives fast requests to get the latest state and not block server
