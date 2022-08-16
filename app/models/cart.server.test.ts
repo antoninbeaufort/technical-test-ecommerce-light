@@ -294,6 +294,7 @@ test.fails("updateAmount should fail if amount is not a number", async () => {
         },
       ],
       "string",
+      // @ts-ignore
       "autre type"
     )
   ).rejects.toBe(1);
@@ -323,6 +324,7 @@ test.fails("updateAmount should fail if amount is not a number", async () => {
         },
       ],
       "string",
+      // @ts-ignore
       false
     )
   ).rejects.toBe(1);
@@ -352,6 +354,7 @@ test.fails("updateAmount should fail if amount is not a number", async () => {
         },
       ],
       "string",
+      // @ts-ignore
       true
     )
   ).rejects.toBe(1);
@@ -381,6 +384,7 @@ test.fails("updateAmount should fail if amount is not a number", async () => {
         },
       ],
       "string",
+      // @ts-ignore
       []
     )
   ).rejects.toBe(1);
@@ -410,6 +414,7 @@ test.fails("updateAmount should fail if amount is not a number", async () => {
         },
       ],
       "string",
+      // @ts-ignore
       {}
     )
   ).rejects.toBe(1);
